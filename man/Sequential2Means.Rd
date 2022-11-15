@@ -2,21 +2,23 @@
 % Please edit documentation in R/Sequential2Means.R
 \name{Sequential2Means}
 \alias{Sequential2Means}
-\title{Variable selection using shrinkage priors}
+\title{Variable selection using shrinkage priors:: Sequential2Means}
 \usage{
-Sequential2Means(S2M, H)
+Sequential2Means(X, Y, t)
 }
 \arguments{
-\item{S2M}{List obtained from the 2Means.variables function}
+\item{X}{Design matrix}
 
-\item{H}{Estimated number of signals obtained from the optimal.b.i function}
+\item{Y}{Response vector}
+
+\item{t}{Vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm.}
 }
 \value{
-Important subset of variables for the Gaussian Linear model
+A list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
 }
 \description{
-Sequential2means function will take S2M: a list obtained from the 2Means.variables function and H: the estimated number of signals obtained from the optimal.b.i function. This will give out the important subset of variables for the Gaussian Linear model.
+Sequential2Means function will take as input X: design matrix, Y : response vector, t: vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm. The function will return a list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
 }
 \examples{
-Sequential2Means(S2M, H)
+Sequential2Means(X, Y, t)
 }

@@ -1,6 +1,6 @@
-#'  Variable selection using shrinkage priors:: optimalHbi
+#' Variable selection using shrinkage priors:: OptimalHbi
 #'
-#'optimalHbi function will take b.i and H.b.i as input which comes from the result of TwoMeans function. It will return H: the optimal value of the tuning parameter.
+#' OptimalHbi function will take b.i and H.b.i as input which comes from the result of TwoMeans function. It will return H: the optimal value of the tuning parameter.
 #' @param bi The values of the tuning parameter
 #' @param Hbi The estimated number of signals corresponding to each b.i
 #'
@@ -8,7 +8,7 @@
 #' @export
 #'
 #' @examples
-#' optimalHbi(bi, Hbi)
+#' OptimalHbi(bi, Hbi)
 OptimalHbi <- function(bi, Hbi){
   bi = 0
   H = 0
