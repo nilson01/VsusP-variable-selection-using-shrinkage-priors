@@ -11,9 +11,16 @@
 #' @examples
 #' Sequential2Means(X, Y, t)
 Sequential2Means <- function(X, Y, t){
-  p = 0
-  b.i = c()
-  H.b.i = c()
+
+  # Initializing variables
+  N=dim(Beta)[1]
+  p=dim(Beta)[2]
+  b.i=seq(lower,upper,length=l)
+  H.b.i=NULL
+
+  # Sequential 2 means algorithm
+
+
   S2M = list(p, b.i, H.b.i)
   return(S2M)
 }
