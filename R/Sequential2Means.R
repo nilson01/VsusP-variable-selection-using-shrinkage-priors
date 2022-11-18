@@ -19,7 +19,18 @@ Sequential2Means <- function(X, Y, t){
   H.b.i=NULL
 
   # Sequential 2 means algorithm
+  for(r in 1:l){
+    KK=NULL
+    for (i in 1:N){
+      # perform k means for sequential 2 means to prune the noise coefficients
+      fit=kmeans(abs(Beta[i,]),2)
+      cen1=min(fit$centers)
+      cen2=max(fit$centers)
 
+      # perform sequential 2 meanns on subsequent clusters until threshold is reached
+    }
+    H.b.i[r]=as.numeric(names(sort(-table(KK)))[1])
+  }
 
   S2M = list(p, b.i, H.b.i)
   return(S2M)
