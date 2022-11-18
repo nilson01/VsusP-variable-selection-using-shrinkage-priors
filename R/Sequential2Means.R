@@ -27,7 +27,23 @@ Sequential2Means <- function(X, Y, t){
       cen1=min(fit$centers)
       cen2=max(fit$centers)
 
-      # perform sequential 2 meanns on subsequent clusters until threshold is reached
+      # perform sequential 2 means on subsequent clusters until threshold is reached
+      temp1=Beta[i,]
+
+      fit1=fit
+
+      while(cen2-cen1>b.i[r]){
+        fit1=fit
+        temp=which.min(fit$centers)
+        temp1=temp1[which(fit$cluster==temp)]
+        if(length(temp1)<=2){break;}
+        fit=kmeans(abs(temp1),2)
+        cen2=max(fit$centers)
+        cen1=min(fit$centers)
+      }
+      temp=which.min(fit1$centers)
+      KK[i]=p-length(which(fit1$cluster==temp))
+
     }
     H.b.i[r]=as.numeric(names(sort(-table(KK)))[1])
   }
