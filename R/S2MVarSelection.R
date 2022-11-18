@@ -10,6 +10,8 @@
 #' @examples
 #' S2MVarSelection(S2M, H)
 S2MVarSelection <- function(S2M, H){
-  impVariablesGLM = c()
+  p=S2M$p
+  abs.post.median=S2M$abs.post.median
+  impVariablesGLM=order(abs.post.median)[p:(p-H+1)]
   return(impVariablesGLM)
 }
