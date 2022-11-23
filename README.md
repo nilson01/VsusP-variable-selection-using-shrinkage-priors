@@ -10,4 +10,16 @@ In the context of Gaussian linear models, the package proposes a solution of the
 devtools::install_github("nilson01/VsusP")
 ```
 
+## TODO::
 
+#### 1. Move Sequential2Means function code to C++
+
+#### 2. Complete function implementation for OptimalHbi & S2MVarSelection
+
+#### 3. (if time permits) continuous integration & datasets with documentation
+
+## References
+
+R Core Team (2022). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL <https://www.R-project.org/>.
+
+Li, H. and Pati, D., 2017. Variable selection using shrinkage priors. Computational Statistics & Data Analysis, 107, pp.107-119.
