@@ -1,12 +1,19 @@
 Package: VsusP
-Title: What the Package Does (One Line, Title Case)
+Title: Variable Selection using Shrinkage Priors
 Version: 0.0.0.9000
 Authors@R: c(
             person("Nilson", "Chapagain", email = "nilson.chapagain@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-2962-2949")),
             person("Debdeep", "Pati", email = "debdeep@tamu.edu", role = c("aut"))
             )
-Description: What the package does (one paragraph).
+Description: In the context of Gaussian linear models, the package proposes a solution of the variable selection problem 
+            using Shrinkage priors. The approach is based on first obtaining a posterior 
+              distribution of the number of significant variables by clustering the significant variables and 
+              the noise coefficients and obtaining samples from this distribution using MCMC. 
+              Then, the significant variables are estimated from the posterior median. This approach requires 
+              very few tuning parameters and is applicable to continuous shrinkage priors.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.2
+Imports: 
+    stats

@@ -17,6 +17,3 @@ Important subset of variables for the Gaussian Linear model
 \description{
 S2MVarSelection function will take S2M: a list obtained from the 2Means.variables function and H: the estimated number of signals obtained from the optimal.b.i function. This will give out the important subset of variables for the Gaussian Linear model.
 }
-\examples{
-S2MVarSelection(S2M, H)
-}

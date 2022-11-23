@@ -8,9 +8,8 @@
 #' @export
 #'
 #' @examples
-#' OptimalHbi(bi, Hbi)
-OptimalHbi <- function(bi, Hbi){
-  bi = 0
-  H = 0
+OptimalHbi <- function(bi, Hbi) {
+  bi <- 0
+  H <- 0
   return(list(bi, H))
 }

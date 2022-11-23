@@ -17,6 +17,3 @@ the optimal value of tuning parameter and the associated H value
 \description{
 OptimalHbi function will take b.i and H.b.i as input which comes from the result of TwoMeans function. It will return H: the optimal value of the tuning parameter.
 }
-\examples{
-OptimalHbi(bi, Hbi)
-}
