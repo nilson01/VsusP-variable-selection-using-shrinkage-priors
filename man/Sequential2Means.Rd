@@ -4,17 +4,17 @@
 \alias{Sequential2Means}
 \title{Variable selection using shrinkage priors:: Sequential2Means}
 \usage{
-Sequential2Means(X, Y, t)
+Sequential2Means(X, Y, b.i)
 }
 \arguments{
 \item{X}{Design matrix}
 
 \item{Y}{Response vector}
 
-\item{t}{Vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm.}
+\item{b.i}{Vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm.}
 }
 \value{
-A list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
+A list S2M which will hold Beta: N by p matrix consisting of N posterior samples of p variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
 }
 \description{
 Sequential2Means function will take as input X: design matrix, Y : response vector, t: vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm. The function will return a list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.

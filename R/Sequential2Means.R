@@ -1,5 +1,5 @@
 
-numNoiseCoeff <- function(Beta.i, b.i_r){
+numNoiseCoeff <- function(Beta.i, b.i_r) {
   # perform k means for sequential 2 means to prune the noise coefficients
   fit <- stats::kmeans(abs(Beta.i), 2)
   # perform sequential 2 means on subsequent clusters until threshold is reached
@@ -14,15 +14,15 @@ numNoiseCoeff <- function(Beta.i, b.i_r){
   }
 
   argminCenter <- which.min(fit$centers)
-  return(length(which(fit$cluster == argminCenter)) )
+  return(length(which(fit$cluster == argminCenter)))
 }
 
 
-                ###########################
-                ###########################
-          ########   Sequential2Means    #########
-                ###########################
-                ###########################
+                                  ###########################
+                                  ###########################
+                           #########   Sequential2Means    #########
+                                  ###########################
+                                  ###########################
 
 
 #' Variable selection using shrinkage priors:: Sequential2Means
@@ -37,9 +37,7 @@ numNoiseCoeff <- function(Beta.i, b.i_r){
 #' @export
 #'
 #' @examples
-#'
 Sequential2Means <- function(X, Y, b.i) {
-
   # Initializing variables
   ##########################
 
@@ -49,8 +47,16 @@ Sequential2Means <- function(X, Y, b.i) {
   # number of covariates
   p <- ncol(X)
 
+  # number of tuning parameters
+  l <- length(b.i)
+
   # initializing the number of signals corresponding to each b.i
   H.b.i <- seq(0, length = length(b.i))
+
+  # N by p matrix consisting of N posterior samples of p variables
+  Beta <- matrix(0, nrow = nrow(X), ncol = ncol(Y))
+
+  # .......TODO.......
 
   # Sequential 2 means algorithm
   for (r in 1:l) {
@@ -69,11 +75,11 @@ Sequential2Means <- function(X, Y, b.i) {
 
 
 
-                        ##########################
-                        ##########################
-                ########   Sequential2MeansBeta    #########
-                        ##########################
-                        ##########################
+                          ##########################
+                          ##########################
+                  ########   Sequential2MeansBeta    #########
+                          ##########################
+                          ##########################
 
 #' Variable selection using shrinkage prior:: Sequential2Means
 #'
@@ -87,10 +93,7 @@ Sequential2Means <- function(X, Y, b.i) {
 #' @return A list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
 #' @export
 #'
-#' @examples
-#'
 Sequential2MeansBeta <- function(Beta, lower, upper, l) {
-
   # Initializing variables
   ##########################
 
@@ -119,18 +122,3 @@ Sequential2MeansBeta <- function(Beta, lower, upper, l) {
   S2M <- list(p, b.i, H.b.i)
   return(S2M)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
