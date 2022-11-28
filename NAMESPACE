@@ -2,4 +2,5 @@
 
 export(OptimalHbi)
 export(S2MVarSelection)
+export(S2MVarSelectionV1)
 export(Sequential2Means)

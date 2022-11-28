@@ -1,9 +1,9 @@
 
-                  ###########################
-                  ###########################
+                ###########################
+                ###########################
            ########   S2MVarSelection    #########
-                  ###########################
-                  ###########################
+                ###########################
+                ###########################
 
 #'  Variable selection using shrinkage priors:: Sequential2Means
 #'
@@ -16,16 +16,14 @@
 #' @export
 #'
 #' @examples
-#'
 S2MVarSelection <- function(Beta, H) {
-
   # number of covariates
   p <- ncol(Beta)
 
   # the medians of the absolute values of the posterior samples of each Beta vector
-  abs.post.median = seq(0, length = p)
-  for(i in 1:p){
-    abs.post.median[i]=median(abs(Beta[,i]))
+  abs.post.median <- seq(0, length = p)
+  for (i in 1:p) {
+    abs.post.median[i] <- stats::median(abs(Beta[, i]))
   }
 
   # the indices of selected variables
@@ -37,11 +35,11 @@ S2MVarSelection <- function(Beta, H) {
 
 
 
-                    ##########################
-                    ##########################
-                    ########   V1    #########
-                    ##########################
-                    ##########################
+                ##########################
+                ##########################
+                ########   V1    #########
+                ##########################
+                ##########################
 
 
 #'  Variable selection using shrinkage priors:: Sequential2Means
@@ -54,14 +52,12 @@ S2MVarSelection <- function(Beta, H) {
 #' @return Indices of important subset of variables for the Gaussian Linear model
 #' @export
 #'
-#' @examples
 S2MVarSelectionV1 <- function(S2M, H) {
-
   # number of covariates
   p <- ncol(S2M$p)
 
   # the medians of the absolute values of the posterior samples of each Beta vector
-  abs.post.median = S2M$abs.post.median
+  abs.post.median <- S2M$abs.post.median
 
   # the indices of selected variables
   impVariablesGLM <- order(abs.post.median)[p:(p - H + 1)]

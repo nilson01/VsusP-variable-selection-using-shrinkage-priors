@@ -4,15 +4,15 @@
 \alias{S2MVarSelection}
 \title{Variable selection using shrinkage priors:: Sequential2Means}
 \usage{
-S2MVarSelection(S2M, H)
+S2MVarSelection(Beta, H)
 }
 \arguments{
-\item{S2M}{List obtained from the 2Means.variables function}
+\item{Beta}{matrix consisting of N posterior samples of p variables that is known either to user or from Sequential2Means function}
 
 \item{H}{Estimated number of signals obtained from the optimal.b.i function}
 }
 \value{
-Important subset of variables for the Gaussian Linear model
+Indices of important subset of variables
 }
 \description{
 S2MVarSelection function will take S2M: a list obtained from the 2Means.variables function and H: the estimated number of signals obtained from the optimal.b.i function. This will give out the important subset of variables for the Gaussian Linear model.
