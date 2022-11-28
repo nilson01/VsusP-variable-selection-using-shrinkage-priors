@@ -66,3 +66,71 @@ Sequential2Means <- function(X, Y, b.i) {
 
   return(S2M)
 }
+
+
+
+                        ##########################
+                        ##########################
+                ########   Sequential2MeansBeta    #########
+                        ##########################
+                        ##########################
+
+#' Variable selection using shrinkage prior:: Sequential2Means
+#'
+#' Sequential2MeansBeta function will take as input Beta : N by p matrix consisting of N posterior samples of p variables, lower : the lower bound of the chosen values of the tuning parameter, upper : the upper bound of the chosen values of the tuning parameter, and l :the number of chosen values of the tuning parameter. The function will return a list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
+#'
+#' @param Beta N by p matrix consisting of N posterior samples of p variables
+#' @param lower the lower bound of the chosen values of the tuning parameter
+#' @param upper the upper bound of the chosen values of the tuning parameter
+#' @param l the number of chosen values of the tuning parameter
+#'
+#' @return A list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
+#' @export
+#'
+#' @examples
+#'
+Sequential2MeansBeta <- function(Beta, lower, upper, l) {
+
+  # Initializing variables
+  ##########################
+
+  # number data points
+  N <- nrow(Beta)
+
+  # number of covariates
+  p <- ncol(Beta)
+
+  # tuning parameters
+  b.i <- seq(lower, upper, length = l)
+
+  # initializing the number of signals as zero for corresponding b.i
+  H.b.i <- seq(0, length = l)
+
+  # Sequential 2 means algorithm
+  for (r in 1:l) {
+    impVars.count <- seq(0, length = N)
+    for (i in 1:N) {
+      impVars.count[i] <- p - numNoiseCoeff(Beta[i, ], b.i[r])
+    }
+    H.b.i[r] <- as.numeric(names(sort(-table(impVars.count)))[1])
+  }
+
+  # list to hold desired output
+  S2M <- list(p, b.i, H.b.i)
+  return(S2M)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
