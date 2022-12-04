@@ -16,6 +16,21 @@
 #' @export
 #'
 #' @examples
+#'
+#' n <- 100
+#' p <- 20
+#' X <- matrix(rnorm(100), n, p)
+#' beta <- exp(rnorm(p))
+#' Y <- X %*% beta + rnorm(n, 0, 1)
+#' df <- data.frame(X,Y)
+#' rv.hs <- bayesreg::bayesreg(Y~. ,df, model="gaussian", prior="horseshoe+", n.samples = 10000, burnin = 2000)
+#'
+#' Beta = rv.hs$beta
+#' H = 10
+#' impVariablesGLM = S2MVarSelection(Beta, H)
+#' impVariablesGLM
+#'
+#'
 S2MVarSelection <- function(Beta, H) {
   # number of covariates
   p <- ncol(Beta)

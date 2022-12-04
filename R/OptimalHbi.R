@@ -8,11 +8,27 @@
 #' @export
 #'
 #' @examples
+#'
+#' n <- 100
+#' p <- 20
+#' X <- matrix(rnorm(100), n, p)
+#' beta <- exp(rnorm(p))
+#' Y <- X %*% beta + rnorm(n, 0, 1)
+#' df <- data.frame(X,Y)
+#' rv.hs <- bayesreg::bayesreg(Y~. ,df, model="gaussian", prior="horseshoe+", n.samples = 10000, burnin = 2000)
+#'
+#' Beta = rv.hs$beta
+#' lower = 0
+#' upper = 1
+#' l = 0.05
+#' S2Mbeta = Sequential2MeansBeta( Beta, lower, upper, l )
+#'
+#' bi = seq(0,1, 0.05)
+#' Hbi = S2Mbeta$H.b.i
+#' OptimalHbi((bi, Hbi))
+#'
 OptimalHbi <- function(bi, Hbi) {
   plot(bi,Hbi)
-  bi <- bi[0]
-  H <- Hbi[0]
-  return(list(bi, H))
 }
 
 
