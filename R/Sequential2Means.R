@@ -1,4 +1,12 @@
+# sourceCpp("Sequential2MeansC.cpp")
 
+#' Variable selection using shrinkage priors:: Sequential2Means
+#'
+#' @param Beta.i ith row sample of N by p matrix consisting of N posterior samples of p variables
+#' @param b.i_r tuning parameter value from Sequential 2-means (S2M) variable selection algorithm.
+#'
+#' @return number of noise coefficients
+#'
 numNoiseCoeff <- function(Beta.i, b.i_r) {
   # perform k means for sequential 2 means to prune the noise coefficients
   fit <- stats::kmeans(abs(Beta.i), 2)
@@ -45,18 +53,73 @@ Sequential2Means <- function(X, Y, b.i) {
   N <- nrow(X)
 
   # number of covariates
-  p <- ncol(X)
+  R <- ncol(X)
 
   # number of tuning parameters
   l <- length(b.i)
+
+  iteration = 5000
+  p = R
 
   # initializing the number of signals corresponding to each b.i
   H.b.i <- seq(0, length = length(b.i))
 
   # N by p matrix consisting of N posterior samples of p variables
-  Beta <- matrix(0, nrow = nrow(X), ncol = ncol(Y))
+  Beta <- matrix(0, nrow = iteration+1, ncol = R)
+  Beta[1,] = rep(0.001,R)
 
-  # .......TODO.......
+  # .......TODO:: USE horse shoe prior and generate beta samples using MCMC.......
+
+  phisq=rep(1,R)
+  tausq=1
+  yita=rep(1,R)
+  n=N
+
+  sigmasq=rep(0,iteration+1)
+
+  #sigmasq~ig(1.5,1.5)
+  ta=1.5
+  tb=1.5
+
+  sigmasq[1]=1
+
+  for (ii in 1:iteration){
+    #generate tausq
+    bb=Beta[ii,]
+    temp=1/tausq
+    u=stats::runif(1,0,1/(1+temp))
+    temp1=sum(0.5*(bb^2/(phisq*sigmasq[ii])))
+    uu=stats::runif(1,0,stats::pgamma((1-u)/u,(n+1)/2,scale=temp1))
+    temp=stats::qgamma(uu,(n+1)/2,scale=temp1)
+    tausq=min(1,1/temp)
+
+    # generate phisq
+    yita=1/phisq
+    u=stats::runif(R,0,1/(1+yita))
+    temp=bb^2/(2*tausq*sigmasq[ii])
+    uu=stats::runif(R,0,stats::pexp((1-u)/u,temp))
+    yita=stats::qexp(uu,temp)
+    phisq=1/yita
+
+    # generate beta(j)
+    D=sigmasq[ii]*tausq*(phisq)
+    Phi=X/sqrt(sigmasq[ii])
+
+    tempu=stats::rnorm(R,0,sd=sqrt((D)))
+    tempv=Phi%*%tempu+stats::rnorm(N,0,1)
+
+    tempw=solve((Phi)%*%(D*t(Phi))+diag(N))%*%(Y/sqrt(sigmasq[ii])-tempv)
+
+    Beta[ii+1,]=(tempu+(D*t(Phi))%*%tempw)
+
+    # updating sigma^2
+    tempan=ta+(N/2)+(R/2)
+    tempbn=tb+0.5*(t(Y-X%*%Beta[ii+1,])%*%(Y-X%*%Beta[ii+1,]))+0.5*sum(Beta[ii+1,]^2/phisq)/tausq
+    sigmasq[ii+1]=1/stats::rgamma(1,tempan,rate=tempbn)
+
+  }
+
+  Beta = Beta[2000:5000,]
 
   # Sequential 2 means algorithm
   for (r in 1:l) {
