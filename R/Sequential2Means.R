@@ -1,5 +1,3 @@
-# sourceCpp("Sequential2MeansC.cpp")
-
 #' Variable selection using shrinkage priors:: Sequential2Means
 #'
 #' @param Beta.i ith row sample of N by p matrix consisting of N posterior samples of p variables
@@ -40,86 +38,62 @@ numNoiseCoeff <- function(Beta.i, b.i_r) {
 #' @param X Design matrix
 #' @param Y Response vector
 #' @param b.i Vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm.
+#' @param prior shrinkage prior distribution over the Beta. Options: ridge regression("ridge"), lasso regression("lasso"), horseshoe regression ("horseshoe") and horseshoe+ regression ("horseshoe+")
+#' @param n.MCMC.samples Number of posterior samples to generate.
+#' @param burnin Number of burn-in samples.
 #'
 #' @return A list S2M which will hold Beta: N by p matrix consisting of N posterior samples of p variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
 #' @export
 #'
 #' @examples
-Sequential2Means <- function(X, Y, b.i) {
+#'
+#' Example One Gaussian Model and Horseshoe prior
+#'
+#' n <- 100
+#' p <- 20
+#' X <- matrix(rnorm(100), n, p)
+#' beta <- exp(rnorm(p))
+#' Y <- X %*% beta + rnorm(n, 0, 1)
+#' b.i = seq(0,1, 0.05)
+#' S2M = Sequential2Means(X, Y, b.i, prior="horseshoe+", n.MCMC.samples = 5000, burnin = 2000)
+#' Beta = S2M$Beta
+#' H.b.i = S2M$H.b.i
+#'
+#'
+#' Example Two Gaussian Model and ridge prior
+#'
+#' n <- 100
+#' p <- 20
+#' X <- matrix(rnorm(100), n, p)
+#' beta <- exp(rnorm(p))
+#' Y <- X %*% beta + rnorm(n, 0, 1)
+#' b.i = seq(0,1, 0.05)
+#' S2M = Sequential2Means(X, Y, b.i, prior="ridge", n.MCMC.samples = 5000, burnin = 2000)
+#' Beta = S2M$Beta
+#' H.b.i = S2M$H.b.i
+#'
+
+Sequential2Means <- function(X, Y, b.i, prior="horseshoe+", n.MCMC.samples = 5000, burnin = 2000) {
   # Initializing variables
   ##########################
 
-  # number data points
-  N <- nrow(X)
+  # the posterior sample size
+  N <- n.MCMC.samples
 
   # number of covariates
-  R <- ncol(X)
+  p <- ncol(X)
 
   # number of tuning parameters
   l <- length(b.i)
 
-  iteration = 5000
-  p = R
-
   # initializing the number of signals corresponding to each b.i
-  H.b.i <- seq(0, length = length(b.i))
+  H.b.i <- rep(0, length = length(b.i))
 
   # N by p matrix consisting of N posterior samples of p variables
-  Beta <- matrix(0, nrow = iteration+1, ncol = R)
-  Beta[1,] = rep(0.001,R)
 
-  # .......TODO:: USE horse shoe prior and generate beta samples using MCMC.......
-
-  phisq=rep(1,R)
-  tausq=1
-  yita=rep(1,R)
-  n=N
-
-  sigmasq=rep(0,iteration+1)
-
-  #sigmasq~ig(1.5,1.5)
-  ta=1.5
-  tb=1.5
-
-  sigmasq[1]=1
-
-  for (ii in 1:iteration){
-    #generate tausq
-    bb=Beta[ii,]
-    temp=1/tausq
-    u=stats::runif(1,0,1/(1+temp))
-    temp1=sum(0.5*(bb^2/(phisq*sigmasq[ii])))
-    uu=stats::runif(1,0,stats::pgamma((1-u)/u,(n+1)/2,scale=temp1))
-    temp=stats::qgamma(uu,(n+1)/2,scale=temp1)
-    tausq=min(1,1/temp)
-
-    # generate phisq
-    yita=1/phisq
-    u=stats::runif(R,0,1/(1+yita))
-    temp=bb^2/(2*tausq*sigmasq[ii])
-    uu=stats::runif(R,0,stats::pexp((1-u)/u,temp))
-    yita=stats::qexp(uu,temp)
-    phisq=1/yita
-
-    # generate beta(j)
-    D=sigmasq[ii]*tausq*(phisq)
-    Phi=X/sqrt(sigmasq[ii])
-
-    tempu=stats::rnorm(R,0,sd=sqrt((D)))
-    tempv=Phi%*%tempu+stats::rnorm(N,0,1)
-
-    tempw=solve((Phi)%*%(D*t(Phi))+diag(N))%*%(Y/sqrt(sigmasq[ii])-tempv)
-
-    Beta[ii+1,]=(tempu+(D*t(Phi))%*%tempw)
-
-    # updating sigma^2
-    tempan=ta+(N/2)+(R/2)
-    tempbn=tb+0.5*(t(Y-X%*%Beta[ii+1,])%*%(Y-X%*%Beta[ii+1,]))+0.5*sum(Beta[ii+1,]^2/phisq)/tausq
-    sigmasq[ii+1]=1/stats::rgamma(1,tempan,rate=tempbn)
-
-  }
-
-  Beta = Beta[2000:5000,]
+  # Using MCMC for beta sampling
+  fit <- bayesreg::bayesreg(Y ~ . ,data.frame(X,Y) , model="gaussian", prior, n.samples = n.MCMC.samples, burnin)
+  Beta = t(fit$beta)
 
   # Sequential 2 means algorithm
   for (r in 1:l) {
@@ -131,11 +105,10 @@ Sequential2Means <- function(X, Y, b.i) {
   }
 
   # list to hold desired output
-  S2M <- list(Beta, H.b.i)
+  S2M <- list(Beta = Beta, H.b.i = H.b.i)
 
   return(S2M)
 }
-
 
 
                           ##########################
@@ -156,7 +129,46 @@ Sequential2Means <- function(X, Y, b.i) {
 #' @return A list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
 #' @export
 #'
+#' @examples
+#'
+#'
+#' Example One Gaussian Model and Horseshoe prior
+#'
+#' n <- 100
+#' p <- 20
+#' X <- matrix(rnorm(100), n, p)
+#' beta <- exp(rnorm(p))
+#' Y <- X %*% beta + rnorm(n, 0, 1)
+#' df <- data.frame(X,Y)
+#' rv.hs <- bayesreg::bayesreg(Y~. ,df, model="gaussian", prior="horseshoe+", n.samples = 5000, burnin = 2000)
+#'
+#' Beta = t(rv.hs$beta)
+#' lower = 0
+#' upper = 1
+#' l = 20
+#' S2Mbeta = Sequential2MeansBeta( Beta, lower, upper, l )
+#' H.b.i = S2Mbeta$H.b.i
+#'
+#'Example Two normal model and lasso prior
+#'
+#'#' n <- 100
+#' p <- 20
+#' X <- matrix(rnorm(100), n, p)
+#' beta <- exp(rnorm(p))
+#' Y <- X %*% beta + rnorm(n, 0, 1)
+#' df <- data.frame(X,Y)
+#' rv.hs <- bayesreg::bayesreg(Y~. ,df, model="normal", prior="lasso", n.samples = 5000, burnin = 2000)
+#'
+#' Beta = t(rv.hs$beta)
+#' lower = 0
+#' upper = 1
+#' l = 15
+#' S2Mbeta = Sequential2MeansBeta( Beta, lower, upper, l )
+#' H.b.i = S2Mbeta$H.b.i
+#'
+
 Sequential2MeansBeta <- function(Beta, lower, upper, l) {
+
   # Initializing variables
   ##########################
 
@@ -167,10 +179,10 @@ Sequential2MeansBeta <- function(Beta, lower, upper, l) {
   p <- ncol(Beta)
 
   # tuning parameters
-  b.i <- seq(lower, upper, length = l)
+  b.i <- seq(from=lower, to=upper, length.out = l)
 
   # initializing the number of signals as zero for corresponding b.i
-  H.b.i <- seq(0, length = l)
+  H.b.i <- rep(0, length = length(b.i))
 
   # Sequential 2 means algorithm
   for (r in 1:l) {
@@ -182,6 +194,6 @@ Sequential2MeansBeta <- function(Beta, lower, upper, l) {
   }
 
   # list to hold desired output
-  S2M <- list(p, b.i, H.b.i)
-  return(S2M)
+  S2Mbeta <- list(p = p, b.i = b.i, H.b.i = H.b.i)
+  return(S2Mbeta)
 }
