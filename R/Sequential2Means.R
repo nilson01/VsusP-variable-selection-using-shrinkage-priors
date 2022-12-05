@@ -38,8 +38,8 @@ numNoiseCoeff <- function(Beta.i, b.i_r) {
 #' @param X Design matrix
 #' @param Y Response vector
 #' @param b.i Vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm.
-#' @param prior shrinkage prior distribution over the Beta. Options: ridge regression("ridge"), lasso regression("lasso"), horseshoe regression ("horseshoe") and horseshoe+ regression ("horseshoe+")
-#' @param n.MCMC.samples Number of posterior samples to generate.
+#' @param prior Shrinkage prior distribution over the Beta. Options: ridge regression("ridge"), lasso regression("lasso"), horseshoe regression ("horseshoe") and horseshoe+ regression ("horseshoe+")
+#' @param n.samples Number of posterior samples to generate.
 #' @param burnin Number of burn-in samples.
 #'
 #' @return A list S2M which will hold Beta: N by p matrix consisting of N posterior samples of p variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
@@ -47,7 +47,7 @@ numNoiseCoeff <- function(Beta.i, b.i_r) {
 #'
 #' @examples
 #'
-#' Example One Gaussian Model and Horseshoe prior
+# Example One Gaussian Model and Horseshoe prior
 #'
 #' n <- 100
 #' p <- 20
@@ -55,12 +55,12 @@ numNoiseCoeff <- function(Beta.i, b.i_r) {
 #' beta <- exp(rnorm(p))
 #' Y <- X %*% beta + rnorm(n, 0, 1)
 #' b.i = seq(0,1, 0.05)
-#' S2M = Sequential2Means(X, Y, b.i, prior="horseshoe+", n.MCMC.samples = 5000, burnin = 2000)
+#' S2M = Sequential2Means(X, Y, b.i, "horseshoe+", 5000, 2000)
 #' Beta = S2M$Beta
 #' H.b.i = S2M$H.b.i
 #'
 #'
-#' Example Two Gaussian Model and ridge prior
+# Example Two Gaussian Model and ridge prior
 #'
 #' n <- 100
 #' p <- 20
@@ -68,17 +68,17 @@ numNoiseCoeff <- function(Beta.i, b.i_r) {
 #' beta <- exp(rnorm(p))
 #' Y <- X %*% beta + rnorm(n, 0, 1)
 #' b.i = seq(0,1, 0.05)
-#' S2M = Sequential2Means(X, Y, b.i, prior="ridge", n.MCMC.samples = 5000, burnin = 2000)
+#' S2M = Sequential2Means(X, Y, b.i, "ridge", 5000, 2000)
 #' Beta = S2M$Beta
 #' H.b.i = S2M$H.b.i
 #'
 
-Sequential2Means <- function(X, Y, b.i, prior="horseshoe+", n.MCMC.samples = 5000, burnin = 2000) {
+Sequential2Means <- function(X, Y, b.i, prior="horseshoe+", n.samples = 5000, burnin = 2000) {
   # Initializing variables
   ##########################
 
   # the posterior sample size
-  N <- n.MCMC.samples
+  N <- n.samples
 
   # number of covariates
   p <- ncol(X)
@@ -92,7 +92,7 @@ Sequential2Means <- function(X, Y, b.i, prior="horseshoe+", n.MCMC.samples = 500
   # N by p matrix consisting of N posterior samples of p variables
 
   # Using MCMC for beta sampling
-  fit <- bayesreg::bayesreg(Y ~ . ,data.frame(X,Y) , model="gaussian", prior, n.samples = n.MCMC.samples, burnin)
+  fit <- bayesreg::bayesreg(Y ~ . ,data.frame(X,Y) , model="gaussian", prior, n.samples, burnin)
   Beta = t(fit$beta)
 
   # Sequential 2 means algorithm
@@ -132,7 +132,7 @@ Sequential2Means <- function(X, Y, b.i, prior="horseshoe+", n.MCMC.samples = 500
 #' @examples
 #'
 #'
-#' Example One Gaussian Model and Horseshoe prior
+# Example One Gaussian Model and Horseshoe prior
 #'
 #' n <- 100
 #' p <- 20
@@ -140,7 +140,7 @@ Sequential2Means <- function(X, Y, b.i, prior="horseshoe+", n.MCMC.samples = 500
 #' beta <- exp(rnorm(p))
 #' Y <- X %*% beta + rnorm(n, 0, 1)
 #' df <- data.frame(X,Y)
-#' rv.hs <- bayesreg::bayesreg(Y~. ,df, model="gaussian", prior="horseshoe+", n.samples = 5000, burnin = 2000)
+#' rv.hs <- bayesreg::bayesreg(Y~. ,df, "gaussian", "horseshoe+", 5000, 2000)
 #'
 #' Beta = t(rv.hs$beta)
 #' lower = 0
@@ -149,7 +149,7 @@ Sequential2Means <- function(X, Y, b.i, prior="horseshoe+", n.MCMC.samples = 500
 #' S2Mbeta = Sequential2MeansBeta( Beta, lower, upper, l )
 #' H.b.i = S2Mbeta$H.b.i
 #'
-#'Example Two normal model and lasso prior
+# Example Two normal model and lasso prior
 #'
 #'#' n <- 100
 #' p <- 20
@@ -157,7 +157,7 @@ Sequential2Means <- function(X, Y, b.i, prior="horseshoe+", n.MCMC.samples = 500
 #' beta <- exp(rnorm(p))
 #' Y <- X %*% beta + rnorm(n, 0, 1)
 #' df <- data.frame(X,Y)
-#' rv.hs <- bayesreg::bayesreg(Y~. ,df, model="normal", prior="lasso", n.samples = 5000, burnin = 2000)
+#' rv.hs <- bayesreg::bayesreg(Y~. ,df, "normal", "lasso", 5000, 2000)
 #'
 #' Beta = t(rv.hs$beta)
 #' lower = 0

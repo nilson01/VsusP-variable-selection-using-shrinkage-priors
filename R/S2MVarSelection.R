@@ -23,7 +23,7 @@
 #' beta <- exp(rnorm(p))
 #' Y <- X %*% beta + rnorm(n, 0, 1)
 #' df <- data.frame(X,Y)
-#' rv.hs <- bayesreg::bayesreg(Y~. ,df, model="gaussian", prior="horseshoe+", n.samples = 10000, burnin = 2000)
+#' rv.hs <- bayesreg::bayesreg(Y~. ,df, "gaussian", "horseshoe+", 10000, 2000)
 #'
 #' Beta = rv.hs$beta
 #' H = 10
