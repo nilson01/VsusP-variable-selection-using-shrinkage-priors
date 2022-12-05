@@ -21,3 +21,39 @@ A list S2M which will hold p: the total number of variables, b.i: the values of 
 \description{
 Sequential2MeansBeta function will take as input Beta : N by p matrix consisting of N posterior samples of p variables, lower : the lower bound of the chosen values of the tuning parameter, upper : the upper bound of the chosen values of the tuning parameter, and l :the number of chosen values of the tuning parameter. The function will return a list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
 }
+\examples{
+
+
+
+n <- 100
+p <- 20
+X <- matrix(rnorm(100), n, p)
+beta <- exp(rnorm(p))
+Y <- X \%*\% beta + rnorm(n, 0, 1)
+df <- data.frame(X,Y)
+rv.hs <- bayesreg::bayesreg(Y~. ,df, "gaussian", "horseshoe+", 5000, 2000)
+
+Beta = t(rv.hs$beta)
+lower = 0
+upper = 1
+l = 20
+S2Mbeta = Sequential2MeansBeta( Beta, lower, upper, l )
+H.b.i = S2Mbeta$H.b.i
+
+
+#' n <- 100
+p <- 20
+X <- matrix(rnorm(100), n, p)
+beta <- exp(rnorm(p))
+Y <- X \%*\% beta + rnorm(n, 0, 1)
+df <- data.frame(X,Y)
+rv.hs <- bayesreg::bayesreg(Y~. ,df, "normal", "lasso", 5000, 2000)
+
+Beta = t(rv.hs$beta)
+lower = 0
+upper = 1
+l = 15
+S2Mbeta = Sequential2MeansBeta( Beta, lower, upper, l )
+H.b.i = S2Mbeta$H.b.i
+
+}

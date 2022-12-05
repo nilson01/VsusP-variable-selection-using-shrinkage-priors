@@ -4,7 +4,14 @@
 \alias{Sequential2Means}
 \title{Variable selection using shrinkage priors:: Sequential2Means}
 \usage{
-Sequential2Means(X, Y, b.i)
+Sequential2Means(
+  X,
+  Y,
+  b.i,
+  prior = "horseshoe+",
+  n.samples = 5000,
+  burnin = 2000
+)
 }
 \arguments{
 \item{X}{Design matrix}
@@ -12,10 +19,42 @@ Sequential2Means(X, Y, b.i)
 \item{Y}{Response vector}
 
 \item{b.i}{Vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm.}
+
+\item{prior}{Shrinkage prior distribution over the Beta. Options: ridge regression("ridge"), lasso regression("lasso"), horseshoe regression ("horseshoe") and horseshoe+ regression ("horseshoe+")}
+
+\item{n.samples}{Number of posterior samples to generate.}
+
+\item{burnin}{Number of burn-in samples.}
 }
 \value{
 A list S2M which will hold Beta: N by p matrix consisting of N posterior samples of p variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
 }
 \description{
 Sequential2Means function will take as input X: design matrix, Y : response vector, t: vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm. The function will return a list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
+}
+\examples{
+
+
+n <- 100
+p <- 20
+X <- matrix(rnorm(100), n, p)
+beta <- exp(rnorm(p))
+Y <- X \%*\% beta + rnorm(n, 0, 1)
+b.i = seq(0,1, 0.05)
+S2M = Sequential2Means(X, Y, b.i, "horseshoe+", 5000, 2000)
+Beta = S2M$Beta
+H.b.i = S2M$H.b.i
+
+
+
+n <- 100
+p <- 20
+X <- matrix(rnorm(100), n, p)
+beta <- exp(rnorm(p))
+Y <- X \%*\% beta + rnorm(n, 0, 1)
+b.i = seq(0,1, 0.05)
+S2M = Sequential2Means(X, Y, b.i, "ridge", 5000, 2000)
+Beta = S2M$Beta
+H.b.i = S2M$H.b.i
+
 }

@@ -17,3 +17,20 @@ Indices of important subset of variables
 \description{
 S2MVarSelection function will take S2M: a list obtained from the 2Means.variables function and H: the estimated number of signals obtained from the optimal.b.i function. This will give out the important subset of variables for the Gaussian Linear model.
 }
+\examples{
+
+n <- 100
+p <- 20
+X <- matrix(rnorm(100), n, p)
+beta <- exp(rnorm(p))
+Y <- X \%*\% beta + rnorm(n, 0, 1)
+df <- data.frame(X,Y)
+rv.hs <- bayesreg::bayesreg(Y~. ,df, "gaussian", "horseshoe+", 10000, 2000)
+
+Beta = rv.hs$beta
+H = 10
+impVariablesGLM = S2MVarSelection(Beta, H)
+impVariablesGLM
+
+
+}
