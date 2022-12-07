@@ -14,3 +14,7 @@ RoxygenNote: 7.2.2
 Imports: 
     bayesreg,
     stats
+Suggests: 
+    covr,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
