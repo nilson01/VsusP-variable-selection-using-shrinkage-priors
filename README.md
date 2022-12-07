@@ -12,9 +12,9 @@ devtools::install_github("nilson01/VsusP")
 
 ## TODO::
 
-#### 1. Move Sequential2Means function code to C++
+#### 1. 
 
-#### 2. Complete function implementation for OptimalHbi & S2MVarSelection
+#### 2. 
 
 #### 3. (if time permits) continuous integration & datasets with documentation
 
