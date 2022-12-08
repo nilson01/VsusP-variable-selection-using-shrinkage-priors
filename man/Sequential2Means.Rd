@@ -37,11 +37,11 @@ Sequential2Means function will take as input X: design matrix, Y : response vect
 
 n <- 100
 p <- 20
-X <- matrix(rnorm(100), n, p)
+X <- matrix(rnorm(n*p), n, p)
 beta <- exp(rnorm(p))
-Y <- X \%*\% beta + rnorm(n, 0, 1)
-b.i = seq(0,1, 0.05)
-S2M = Sequential2Means(X, Y, b.i, "horseshoe+", 5000, 2000)
+Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
+b.i = seq(0, 1, 0.05)
+S2M = Sequential2Means(X, Y, b.i, "horseshoe+", 200, 100)
 Beta = S2M$Beta
 H.b.i = S2M$H.b.i
 
@@ -49,11 +49,11 @@ H.b.i = S2M$H.b.i
 
 n <- 100
 p <- 20
-X <- matrix(rnorm(100), n, p)
+X <- matrix(rnorm(n*p), n, p)
 beta <- exp(rnorm(p))
-Y <- X \%*\% beta + rnorm(n, 0, 1)
-b.i = seq(0,1, 0.05)
-S2M = Sequential2Means(X, Y, b.i, "ridge", 5000, 2000)
+Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
+b.i = seq(0, 1, 0.05)
+S2M = Sequential2Means(X, Y, b.i, "ridge", 200, 100)
 Beta = S2M$Beta
 H.b.i = S2M$H.b.i
 

@@ -21,16 +21,16 @@ OptimalHbi function will take b.i and H.b.i as input which comes from the result
 
 n <- 100
 p <- 20
-X <- matrix(rnorm(100), n, p)
+X <- matrix(rnorm(n*p), n, p)
 beta <- exp(rnorm(p))
-Y <- X \%*\% beta + rnorm(n, 0, 1)
+Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
 df <- data.frame(X,Y)
-rv.hs <- bayesreg::bayesreg(Y~. ,df , "gaussian", "horseshoe+", 3000, 2000)
+rv.hs <- bayesreg::bayesreg(Y~. ,df , "gaussian", "horseshoe+", 200, 100)
 
-Beta = rv.hs$beta
+Beta = t(rv.hs$beta)
 lower = 0
 upper = 1
-l = 0.05
+l = 5
 S2Mbeta = Sequential2MeansBeta( Beta, lower, upper, l)
 
 bi = S2Mbeta$b.i

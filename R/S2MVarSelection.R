@@ -19,11 +19,11 @@
 #'
 #' n <- 100
 #' p <- 20
-#' X <- matrix(rnorm(100), n, p)
+#' X <- matrix(rnorm(n*p), n, p)
 #' beta <- exp(rnorm(p))
-#' Y <- X %*% beta + rnorm(n, 0, 1)
+#' Y <- as.vector(X %*% beta + rnorm(n, 0, 1))
 #' df <- data.frame(X,Y)
-#' rv.hs <- bayesreg::bayesreg(Y~. ,df, "gaussian", "horseshoe+", 10000, 2000)
+#' rv.hs <- bayesreg::bayesreg(Y~. ,df, "gaussian", "horseshoe+", 200, 100)
 #'
 #' Beta = rv.hs$beta
 #' H = 10
@@ -32,6 +32,17 @@
 #'
 #'
 S2MVarSelection <- function(Beta, H) {
+
+  # Check for NULL or NaN values in Beta
+  if(is.null(Beta) || any(is.na(Beta))){
+    stop(paste("Beta must not be NULL or have NaN values. \n Please check Sequential2Means funnction if Beta is not available."))
+  }
+
+  # Check for matrix data type of Beta
+  if(! is.matrix(Beta)){
+    stop(paste("Beta must be passed as matrix data type. "))
+  }
+
   # number of covariates
   p <- ncol(Beta)
 

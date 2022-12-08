@@ -51,11 +51,11 @@ numNoiseCoeff <- function(Beta.i, b.i_r) {
 #'
 #' n <- 100
 #' p <- 20
-#' X <- matrix(rnorm(100), n, p)
+#' X <- matrix(rnorm(n*p), n, p)
 #' beta <- exp(rnorm(p))
-#' Y <- X %*% beta + rnorm(n, 0, 1)
-#' b.i = seq(0,1, 0.05)
-#' S2M = Sequential2Means(X, Y, b.i, "horseshoe+", 5000, 2000)
+#' Y <- as.vector(X %*% beta + rnorm(n, 0, 1))
+#' b.i = seq(0, 1, 0.05)
+#' S2M = Sequential2Means(X, Y, b.i, "horseshoe+", 200, 100)
 #' Beta = S2M$Beta
 #' H.b.i = S2M$H.b.i
 #'
@@ -64,16 +64,81 @@ numNoiseCoeff <- function(Beta.i, b.i_r) {
 #'
 #' n <- 100
 #' p <- 20
-#' X <- matrix(rnorm(100), n, p)
+#' X <- matrix(rnorm(n*p), n, p)
 #' beta <- exp(rnorm(p))
-#' Y <- X %*% beta + rnorm(n, 0, 1)
-#' b.i = seq(0,1, 0.05)
-#' S2M = Sequential2Means(X, Y, b.i, "ridge", 5000, 2000)
+#' Y <- as.vector(X %*% beta + rnorm(n, 0, 1))
+#' b.i = seq(0, 1, 0.05)
+#' S2M = Sequential2Means(X, Y, b.i, "ridge", 200, 100)
 #' Beta = S2M$Beta
 #' H.b.i = S2M$H.b.i
 #'
 
 Sequential2Means <- function(X, Y, b.i, prior="horseshoe+", n.samples = 5000, burnin = 2000) {
+
+  # Check for NULL or NaN values in X
+  if(is.null(X) || any(is.na(X))){
+    stop(paste("X must not be NULL or have NaN values."))
+  }
+
+  # Check for matrix data type of X
+  if(! is.matrix(X)){
+    stop(paste("X must be passed as matrix data type."))
+  }
+
+  # Check for NULL or NaN values in Y
+  if(is.null(Y) || any(is.na(Y))){
+    stop(paste("Y must not be NULL or have NaN values."))
+  }
+
+  # Check for vector data type of Y
+  if(! is.vector(Y)){
+    stop(paste("Y must be passed as vector data type."))
+  }
+
+  # Check for compatibility of dimensions between X and Y
+  if (nrow(X) != length(Y)) {
+    stop(paste("Dimensions between X and Y are not compatible. "))
+  }
+
+
+  # Check for NULL or NaN values in b.i
+  if(is.null(b.i) || any(is.na(b.i))){
+    stop(paste("b.i must not be NULL or have NaN values."))
+  }
+
+  # Check for vector data type of b.i
+  if(! is.vector(b.i)){
+    stop(paste("b.i must be passed as vector data type."))
+  }
+
+  # Check for prior from available options
+  if(! prior %in%  c('ridge', 'lasso', 'horseshoe', 'horseshoe+')){
+    stop(paste("Available prior options: ridge regression('ridge'), lasso regression('lasso'), horseshoe regression ('horseshoe') and horseshoe+ regression ('horseshoe+')"))
+  }
+
+  # Check for the lower bound of n.samples
+  if(n.samples < 100){
+    stop(paste("n.samples is recommended to be at least 100"))
+  }
+
+  # Check if n.samples is a natural number
+  if(n.samples%%1!=0){
+    stop(paste("n.samples must be a natural number greater than or equal to 100"))
+  }
+
+  # Check for the lower bound of burnin
+  if(burnin < 100){
+    stop(paste("burnin is recommended to be at least 100"))
+  }
+
+  # Check if the number of burnin is a natural number
+  if(burnin%%1!=0){
+    stop(paste("burnin must be a natural number greater than or equal to 100"))
+  }
+
+
+
+
   # Initializing variables
   ##########################
 
@@ -136,11 +201,11 @@ Sequential2Means <- function(X, Y, b.i, prior="horseshoe+", n.samples = 5000, bu
 #'
 #' n <- 100
 #' p <- 20
-#' X <- matrix(rnorm(100), n, p)
+#' X <- matrix(rnorm(n*p), n, p)
 #' beta <- exp(rnorm(p))
-#' Y <- X %*% beta + rnorm(n, 0, 1)
+#' Y <- as.vector(X %*% beta + rnorm(n, 0, 1))
 #' df <- data.frame(X,Y)
-#' rv.hs <- bayesreg::bayesreg(Y~. ,df, "gaussian", "horseshoe+", 5000, 2000)
+#' rv.hs <- bayesreg::bayesreg(Y~. ,df, "gaussian", "horseshoe+", 200, 100)
 #'
 #' Beta = t(rv.hs$beta)
 #' lower = 0
@@ -153,11 +218,11 @@ Sequential2Means <- function(X, Y, b.i, prior="horseshoe+", n.samples = 5000, bu
 #'
 #'#' n <- 100
 #' p <- 20
-#' X <- matrix(rnorm(100), n, p)
+#' X <- matrix(rnorm(n*p), n, p)
 #' beta <- exp(rnorm(p))
-#' Y <- X %*% beta + rnorm(n, 0, 1)
+#' Y <- as.vector(X %*% beta + rnorm(n, 0, 1))
 #' df <- data.frame(X,Y)
-#' rv.hs <- bayesreg::bayesreg(Y~. ,df, "normal", "lasso", 5000, 2000)
+#' rv.hs <- bayesreg::bayesreg(Y~. ,df, "normal", "lasso", 200, 100)
 #'
 #' Beta = t(rv.hs$beta)
 #' lower = 0
@@ -168,6 +233,32 @@ Sequential2Means <- function(X, Y, b.i, prior="horseshoe+", n.samples = 5000, bu
 #'
 
 Sequential2MeansBeta <- function(Beta, lower, upper, l) {
+
+  # Check for NULL or NaN values in Beta
+  if(is.null(Beta) || any(is.na(Beta))){
+    stop(paste("Beta must not be NULL or have NaN values. \n Please check Sequential2Means funnction if Beta is not available."))
+  }
+
+  # Check for matrix data type of Beta
+  if(! is.matrix(Beta)){
+    stop(paste("Beta must be passed as matrix data type. "))
+  }
+
+  # Lower bound and Upper bound magnitude comparison check
+  if(lower > upper){
+    stop(paste("Lower bound is greater than Upper bound. "))
+  }
+
+  # Check if l is NULL
+  if(is.null(l)){
+    stop(paste("l must not be NULL. "))
+  }
+
+  # Check if l is natural number greater than zero
+  if(l<= 0 | l%%1 !=0){
+    stop(paste("l must be an integer greater than or equal to zero. "))
+  }
+
 
   # Initializing variables
   ##########################

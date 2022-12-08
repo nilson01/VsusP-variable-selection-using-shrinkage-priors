@@ -27,11 +27,11 @@ Sequential2MeansBeta function will take as input Beta : N by p matrix consisting
 
 n <- 100
 p <- 20
-X <- matrix(rnorm(100), n, p)
+X <- matrix(rnorm(n*p), n, p)
 beta <- exp(rnorm(p))
-Y <- X \%*\% beta + rnorm(n, 0, 1)
+Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
 df <- data.frame(X,Y)
-rv.hs <- bayesreg::bayesreg(Y~. ,df, "gaussian", "horseshoe+", 5000, 2000)
+rv.hs <- bayesreg::bayesreg(Y~. ,df, "gaussian", "horseshoe+", 200, 100)
 
 Beta = t(rv.hs$beta)
 lower = 0
@@ -43,11 +43,11 @@ H.b.i = S2Mbeta$H.b.i
 
 #' n <- 100
 p <- 20
-X <- matrix(rnorm(100), n, p)
+X <- matrix(rnorm(n*p), n, p)
 beta <- exp(rnorm(p))
-Y <- X \%*\% beta + rnorm(n, 0, 1)
+Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
 df <- data.frame(X,Y)
-rv.hs <- bayesreg::bayesreg(Y~. ,df, "normal", "lasso", 5000, 2000)
+rv.hs <- bayesreg::bayesreg(Y~. ,df, "normal", "lasso", 200, 100)
 
 Beta = t(rv.hs$beta)
 lower = 0
