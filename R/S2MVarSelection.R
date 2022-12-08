@@ -48,7 +48,6 @@ S2MVarSelection <- function(Beta, H = 10) {
     stop(paste("H must not be NULL. "))
   }
 
-
   # Check for numeric data type of H
   if(! is.numeric(H)){
     stop(paste("H must be passed as numeric data type. "))
