@@ -1,3 +1,25 @@
-test_that("multiplication works", {
-  expect_equal(2 * 2, 4)
+test_that("S2MVarSelection works", {
+
+  n <- 100
+  p <- 20
+  X <- matrix(rnorm(n*p), n, p)
+  beta <- exp(rnorm(p))
+  Y <- X %*% beta + rnorm(n, 0, 1)
+  df <- data.frame(X,Y)
+  rv.hs <- bayesreg::bayesreg(Y~. ,df, "gaussian", "horseshoe+", 150, 100)
+  Beta = rv.hs$beta
+  H = 12
+
+  # Check for NULL or NaN values of Beta
+  testthat::expect_error(S2MVarSelection(NULL, H))
+
+  # Check for matrix data type of Beta
+  testthat::expect_error(S2MVarSelection(Beta[,1], H))
+
+  # Expecting output to be of predefined length for impVariablesGLM
+  testthat::expect_length((S2MVarSelection(Beta, H)), H)
+
+
 })
+
+
