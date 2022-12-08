@@ -1,5 +1,7 @@
 test_that("S2MVarSelection works", {
 
+  # Data Generation
+
   n <- 100
   p <- 20
   X <- matrix(rnorm(n*p), n, p)
@@ -15,6 +17,13 @@ test_that("S2MVarSelection works", {
 
   # Check for matrix data type of Beta
   testthat::expect_error(S2MVarSelection(Beta[,1], H))
+
+
+  # Check for NULL or NaN values for H
+  testthat::expect_error(S2MVarSelection(Beta, NULL))
+
+  # Check for numeric data type of H
+  testthat::expect_error(S2MVarSelection(Beta, "H"))
 
   # Expecting output to be of predefined length for impVariablesGLM
   testthat::expect_length((S2MVarSelection(Beta, H)), H)
