@@ -56,8 +56,7 @@ test_that("Sequential2Means works", {
   ########### OUTPUT TESTS
 
   # Expecting Beta output to be of specific dimension
-  # testthat::expect_length(Sequential2Means(X, Y, b.i, "ridge", 200, 100)$Beta[1,], ncol(X))
-  testthat::expect_length(Sequential2Means(X, Y, b.i, "ridge", 200, 100)$Beta[1,], 200)
+  testthat::expect_length(Sequential2Means(X, Y, b.i, "ridge", 200, 100)$Beta[1,], ncol(X))
 
 
   testthat::expect_length(Sequential2Means(X, Y, b.i, "ridge", 200, 100)$Beta[,1], 200)
