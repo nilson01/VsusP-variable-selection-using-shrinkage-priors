@@ -2,7 +2,7 @@
 % Please edit documentation in R/Sequential2Means.R
 \name{Sequential2MeansBeta}
 \alias{Sequential2MeansBeta}
-\title{Variable selection using shrinkage prior:: Sequential2Means}
+\title{Variable selection using shrinkage prior :: Sequential2MeansBeta}
 \usage{
 Sequential2MeansBeta(Beta, lower, upper, l)
 }
@@ -16,14 +16,19 @@ Sequential2MeansBeta(Beta, lower, upper, l)
 \item{l}{the number of chosen values of the tuning parameter}
 }
 \value{
-A list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
+A list S2M which will hold p, b.i, and H.b.i:
+
+\item{p}{total number of variables in the model}
+\item{b.i}{the values of the tuning parameter}
+\item{H.b.i}{the estimated number of signals corresponding to each b.i}
 }
 \description{
 Sequential2MeansBeta function will take as input Beta : N by p matrix consisting of N posterior samples of p variables, lower : the lower bound of the chosen values of the tuning parameter, upper : the upper bound of the chosen values of the tuning parameter, and l :the number of chosen values of the tuning parameter. The function will return a list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
 }
 \examples{
 
-
+# -----------------------------------------------------------------
+# Example 1: Gaussian Model and Horseshoe prior
 
 n <- 100
 p <- 20
@@ -31,6 +36,8 @@ X <- matrix(rnorm(n*p), n, p)
 beta <- exp(rnorm(p))
 Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
 df <- data.frame(X,Y)
+
+# beta samples for gaussian model using horseshow prior and gibbs sampling
 rv.hs <- bayesreg::bayesreg(Y~. ,df, "gaussian", "horseshoe+", 200, 100)
 
 Beta = t(rv.hs$beta)
@@ -40,6 +47,8 @@ l = 20
 S2Mbeta = Sequential2MeansBeta( Beta, lower, upper, l )
 H.b.i = S2Mbeta$H.b.i
 
+# -----------------------------------------------------------------
+# Example 2: normal model and lasso prior
 
 #' n <- 100
 p <- 20
@@ -56,4 +65,13 @@ l = 15
 S2Mbeta = Sequential2MeansBeta( Beta, lower, upper, l )
 H.b.i = S2Mbeta$H.b.i
 
+}
+\references{
+Makalic, E. & Schmidt, D. F.
+High-Dimensional Bayesian Regularised Regression with the BayesReg Package
+arXiv:1611.06649, 2016
+
+Li, H., & Pati, D.
+Variable selection using shrinkage priors
+Computational Statistics & Data Analysis, 107, 107-119.
 }

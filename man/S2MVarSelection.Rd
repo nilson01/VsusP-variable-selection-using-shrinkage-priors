@@ -2,9 +2,9 @@
 % Please edit documentation in R/S2MVarSelection.R
 \name{S2MVarSelection}
 \alias{S2MVarSelection}
-\title{Variable selection using shrinkage priors:: Sequential2Means}
+\title{Variable selection using shrinkage priors :: S2MVarSelection}
 \usage{
-S2MVarSelection(Beta, H)
+S2MVarSelection(Beta, H = 10)
 }
 \arguments{
 \item{Beta}{matrix consisting of N posterior samples of p variables that is known either to user or from Sequential2Means function}
@@ -25,12 +25,23 @@ X <- matrix(rnorm(n*p), n, p)
 beta <- exp(rnorm(p))
 Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
 df <- data.frame(X,Y)
+# Fit a model using gaussian horseshoe+ for 200 samples
+# # recommended n.samples is 5000 and burning is 2000
 rv.hs <- bayesreg::bayesreg(Y~. ,df, "gaussian", "horseshoe+", 200, 100)
 
 Beta = rv.hs$beta
-H = 10
+H = 12
 impVariablesGLM = S2MVarSelection(Beta, H)
 impVariablesGLM
 
 
+}
+\references{
+Makalic, E. & Schmidt, D. F.
+High-Dimensional Bayesian Regularised Regression with the BayesReg Package
+arXiv:1611.06649, 2016
+
+Li, H., & Pati, D.
+Variable selection using shrinkage priors
+Computational Statistics & Data Analysis, 107, 107-119.
 }

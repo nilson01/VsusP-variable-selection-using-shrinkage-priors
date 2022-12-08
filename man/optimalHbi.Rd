@@ -2,7 +2,7 @@
 % Please edit documentation in R/S2MVarSelection.R
 \name{OptimalHbi}
 \alias{OptimalHbi}
-\title{OptimalHbi function will take b.i and H.b.i as input which comes from the result of TwoMeans function. It will return H: the optimal value of the tuning parameter.}
+\title{Variable selection using shrinkage priors :: OptimalHbi}
 \usage{
 OptimalHbi(bi, Hbi)
 }
@@ -37,4 +37,13 @@ bi = S2Mbeta$b.i
 Hbi = S2Mbeta$H.b.i
 OptimalHbi(bi, Hbi)
 
+}
+\references{
+Makalic, E. & Schmidt, D. F.
+High-Dimensional Bayesian Regularised Regression with the BayesReg Package
+arXiv:1611.06649, 2016
+
+Li, H., & Pati, D.
+Variable selection using shrinkage priors
+Computational Statistics & Data Analysis, 107, 107-119.
 }

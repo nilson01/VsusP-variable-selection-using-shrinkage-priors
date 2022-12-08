@@ -2,7 +2,7 @@
 % Please edit documentation in R/Sequential2Means.R
 \name{numNoiseCoeff}
 \alias{numNoiseCoeff}
-\title{Variable selection using shrinkage priors:: Sequential2Means}
+\title{Variable selection using shrinkage priors :: numNoiseCoeff}
 \usage{
 numNoiseCoeff(Beta.i, b.i_r)
 }
@@ -15,5 +15,5 @@ numNoiseCoeff(Beta.i, b.i_r)
 number of noise coefficients
 }
 \description{
-Variable selection using shrinkage priors:: Sequential2Means
+Variable selection using shrinkage priors :: numNoiseCoeff
 }
