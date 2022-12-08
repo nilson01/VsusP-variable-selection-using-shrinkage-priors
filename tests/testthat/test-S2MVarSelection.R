@@ -20,6 +20,13 @@ test_that("S2MVarSelection works", {
   testthat::expect_length((S2MVarSelection(Beta, H)), H)
 
 
+  # Check for NULL or NaN values in b.i
+  testthat::expect_error(OptimalHbi(NULL, Hbi = c(17,12,12,12,12,6,6,6,4,5)))
+
+  # Check for vector data type of b.i
+  testthat::expect_error(OptimalHbi(matrix(rnorm(4),2,2), Hbi = c(17,12,12,12,12,6,6,6,4,5)))
+
+
 })
 
 
