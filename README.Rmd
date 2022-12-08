@@ -15,14 +15,6 @@ In the context of Gaussian linear models, the package proposes a solution of the
 devtools::install_github("nilson01/VsusP")
 ```
 
-## TODO::
-
-#### 1. 
-
-#### 2. 
-
-#### 3. (if time permits) continuous integration & datasets with documentation
-
 ## References
 
 R Core Team (2022). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL <https://www.R-project.org/>.
