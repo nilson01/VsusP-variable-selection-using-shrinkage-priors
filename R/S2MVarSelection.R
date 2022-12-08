@@ -157,11 +157,37 @@ OptimalHbi <- function(bi, Hbi) {
 #' @return Indices of important subset of variables for the Gaussian Linear model
 #'
 S2MVarSelectionV1 <- function(S2M, H = 10) {
+
   # number of covariates
   p <- ncol(S2M$p)
 
   # the medians of the absolute values of the posterior samples of each Beta vector
   abs.post.median <- S2M$abs.post.median
+
+  # Check for NULL or NaN values in H
+  if(is.null(H) ){
+    stop(paste("H must not be NULL. "))
+  }
+
+  # Check for numeric data type of H
+  if(! is.numeric(H)){
+    stop(paste("H must be passed as numeric data type. "))
+  }
+
+  # Check for NULL or NaN values in abs.post.median
+  if(is.null(abs.post.median) || any(is.na(abs.post.median))){
+    stop(paste("abs.post.median must not be NULL or have NaN values. "))
+  }
+
+  # Check for non negative values in abs.post.median
+  if(any(abs.post.median < 0)){
+    stop(paste("abs.post.median must not be less than zero. "))
+  }
+
+  # Check for matrix data type of Beta
+  if(! is.vector(abs.post.median)){
+    stop(paste("abs.post.median must be passed as vector data type. "))
+  }
 
   # the indices of selected variables
   impVariablesGLM <- order(abs.post.median)[p:(p - H + 1)]
