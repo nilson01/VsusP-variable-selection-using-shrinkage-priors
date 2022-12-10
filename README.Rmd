@@ -56,10 +56,13 @@ set.seed(20221208)
 sim.XY <- function(n, p, beta){
   X <- matrix(rnorm(n*p), n, p)
   Y <- as.vector(X %*% beta + rnorm(n, 0, 1))
-  return (list(X=X, Y=Y, beta=beta)
+  return(list(X=X, Y=Y, beta=beta)  )
 }
 
-data <- sim.XY(n = 100, p = 20 , b.i = seq(0, 1, 0.05))
+n = 100
+p = 20
+beta <- exp(rnorm(p))
+data <- sim.XY(n , p, beta)
 ```
 
 The function `Sequential2Means` is used get the samples of `Beta` and `H.b.i`. `Beta` can be calculated using different shrinkage priors and gibbs sampling technique, whereas H.b.i is the estimated number of signals corresponding to each tuning parameter `b.i` that is computed using S2M algorithm. If the `Beta` matrix is available prior, then H.b.i is recommended to be computed using `Sequential2MeansBeta`. 
@@ -81,7 +84,7 @@ OptimalHbi(bi = b.i, Hbi = H.b.i)
 Finally, the indices of important subset of variables can be obtained using `S2MVarSelection` function. The input parameter `H` is the optimal H.b.i value from the selected tuning parameter in `OptimalHbi` function. Also, `Beta` is the user defined matrix or the matrix derived from `Sequential2Means` function. 
 
 ```
-H = 12 
+H = 17 
 impVariablesGLM = S2MVarSelection(Beta, H)
 impVariablesGLM
 
