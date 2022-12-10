@@ -169,7 +169,7 @@ OptimalHbi <- function(bi, Hbi) {
 S2MVarSelectionV1 <- function(S2M, H = 10) {
 
   # number of covariates
-  p <- (S2M$p)
+  p <- S2M$p
 
   # the medians of the absolute values of the posterior samples of each Beta vector
   abs.post.median <- S2M$abs.post.median
