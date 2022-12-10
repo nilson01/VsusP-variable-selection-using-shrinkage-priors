@@ -9,7 +9,7 @@ test_that("S2MVarSelection works", {
   Y <- X %*% beta + rnorm(n, 0, 1)
   df <- data.frame(X,Y)
   rv.hs <- bayesreg::bayesreg(Y~. ,df, "gaussian", "horseshoe+", 150, 100)
-  Beta = rv.hs$beta
+  Beta = t(rv.hs$beta)
   H = 12
 
   #--------------------- S2MVarSelection -----------------------#
@@ -29,6 +29,9 @@ test_that("S2MVarSelection works", {
   # Expecting output to be of predefined length for impVariablesGLM
   testthat::expect_length((S2MVarSelection(Beta, H)), H)
 
+  # Check for H must be less than total covariates.
+  testthat::expect_error(S2MVarSelection(Beta, p+50))
+
   #--------------------- S2MVarSelectionV1 ---------------------#
 
   # the medians of the absolute values of the posterior samples of each Beta vector
@@ -43,7 +46,7 @@ test_that("S2MVarSelection works", {
   testthat::expect_error(S2MVarSelectionV1(NULL, H))
 
   # Check for vector data type of abs.post.median
-  testthat::expect_error(S2MVarSelection(list(abs.post.median="ABC"), H))
+  testthat::expect_error(S2MVarSelectionV1(list(abs.post.median="ABC"), H))
 
   # Check for NULL or NaN values for H
   testthat::expect_error(S2MVarSelectionV1(S2M, NULL))
@@ -54,8 +57,11 @@ test_that("S2MVarSelection works", {
   # Check for non negative values in abs.post.median
   testthat::expect_error(S2MVarSelectionV1(S2M = list(abs.post.median=c(-1,-2,3)), "H"))
 
+  # Check for H must be less than total covariates.
+  testthat::expect_error(S2MVarSelection(Beta, p+50))
+
   # Check for vector data type of abs.post.median
-  # testthat::expect_length(S2MVarSelectionV1(S2M, H), H)
+  testthat::expect_length(S2MVarSelectionV1(S2M, H), H)
 
   #--------------------- OptimalHbi ---------------------#
 
@@ -64,6 +70,9 @@ test_that("S2MVarSelection works", {
 
   # Check for vector data type of b.i
   testthat::expect_error(OptimalHbi(matrix(rnorm(4),2,2), Hbi = c(17,12,12,12,12,6,6,6,4,5)))
+
+  # Check for the length of b.i and H.b.i
+  testthat::expect_error(OptimalHbi(c(1,2,4), Hbi = c(17,12,12,12,12,6,6,6,4,5)))
 
 
 })

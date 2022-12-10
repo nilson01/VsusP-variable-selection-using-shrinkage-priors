@@ -63,6 +63,11 @@ S2MVarSelection <- function(Beta, H = 10) {
     stop(paste("Beta must be passed as matrix data type. "))
   }
 
+  # Check for H must be less than total covariates.
+  if( H > ncol(Beta)){
+    stop(paste("H must be less than total covariates. "))
+  }
+
   # number of covariates
   p <- ncol(Beta)
 
@@ -137,6 +142,11 @@ OptimalHbi <- function(bi, Hbi) {
     stop(paste("b.i must be passed as vector data type."))
   }
 
+  # Check for the length of b.i and H.b.i
+  if(length(bi) != length(Hbi)){
+    stop(paste("b.i and H.b.i must have same length."))
+  }
+
   # plotting tuning parameters Vs number of important variables counts
   plot(bi,Hbi)
 
@@ -159,7 +169,7 @@ OptimalHbi <- function(bi, Hbi) {
 S2MVarSelectionV1 <- function(S2M, H = 10) {
 
   # number of covariates
-  p <- ncol(S2M$p)
+  p <- (S2M$p)
 
   # the medians of the absolute values of the posterior samples of each Beta vector
   abs.post.median <- S2M$abs.post.median
@@ -184,10 +194,16 @@ S2MVarSelectionV1 <- function(S2M, H = 10) {
     stop(paste("abs.post.median must not be less than zero. "))
   }
 
-  # Check for matrix data type of Beta
+  # Check for matrix data type of abs.post.median
   if(! is.vector(abs.post.median)){
     stop(paste("abs.post.median must be passed as vector data type. "))
   }
+
+  # Check for H must be less than total covariates.
+  if( H > p){
+    stop(paste("H must be less than total covariates. "))
+  }
+
 
   # the indices of selected variables
   impVariablesGLM <- order(abs.post.median)[p:(p - H + 1)]
