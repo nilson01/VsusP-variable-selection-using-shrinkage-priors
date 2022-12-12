@@ -9,9 +9,9 @@
 #'
 #' @export
 #' @param Beta matrix consisting of N posterior samples of p variables that is known either to user or from Sequential2Means function
-#' @param H Estimated number of signals obtained from the optimal.b.i function
+#' @param H Estimated number of signals obtained from the optimal.b.i function of numeric data type
 #'
-#' @return Indices of important subset of variables
+#' @return a vector containing indices of important subset of variables of dimension H X 1.
 #'
 #' @references
 #'
@@ -93,10 +93,10 @@ S2MVarSelection <- function(Beta, H = 10) {
 #' OptimalHbi function will take b.i and H.b.i as input which comes from the result of TwoMeans function. It will return H: the optimal value of the tuning parameter.
 #'
 #' @export
-#' @param bi The values of the tuning parameter
-#' @param Hbi The estimated number of signals corresponding to each b.i
+#' @param bi a vector holding the values of the tuning parameter specified by the user
+#' @param Hbi The estimated number of signals corresponding to each b.i of numeric data type
 #'
-#' @return the optimal value of tuning parameter and the associated H value
+#' @return the optimal value (numeric) of tuning parameter and the associated H value
 #'
 #' @references
 #'
@@ -158,9 +158,9 @@ OptimalHbi <- function(bi, Hbi) {
 #'
 #' @export
 #' @param S2M List obtained from the 2Means.variables function
-#' @param H Estimated number of signals obtained from the optimal.b.i function
+#' @param H Estimated number (numeric) of signals obtained from the optimal.b.i function
 #'
-#' @return Indices of important subset of variables for the Gaussian Linear model
+#' @return a vector of indices of important subset of variables for the Gaussian Linear modelof shape H X 1
 #'
 S2MVarSelectionV1 <- function(S2M, H = 10) {
   # number of covariates

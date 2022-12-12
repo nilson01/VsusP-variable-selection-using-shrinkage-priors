@@ -14,24 +14,24 @@ Sequential2Means(
 )
 }
 \arguments{
-\item{X}{Design matrix}
+\item{X}{Design matrix of dimension n X p, where n = total data points and p = total number of features}
 
-\item{Y}{Response vector}
+\item{Y}{Response vector of dimension n X 1}
 
-\item{b.i}{Vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm.}
+\item{b.i}{Vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm of dimension specified by user.}
 
-\item{prior}{Shrinkage prior distribution over the Beta. Available options are ridge regression: prior="rr" or prior="ridge", lasso regression: prior="lasso", horseshoe regression: prior="hs" or prior="horseshoe", and horseshoe+ regression : prior="hs+" or prior="horseshoe+"}
+\item{prior}{Shrinkage prior distribution over the Beta. Available options are ridge regression: prior="rr" or prior="ridge", lasso regression: prior="lasso", horseshoe regression: prior="hs" or prior="horseshoe", and horseshoe+ regression : prior="hs+" or prior="horseshoe+" ( String data type)}
 
-\item{n.samples}{Number of posterior samples to generate.}
+\item{n.samples}{Number of posterior samples to generate of numeric data type}
 
-\item{burnin}{Number of burn-in samples.}
+\item{burnin}{Number of burn-in samples of numeric data type}
 }
 \value{
 A list S2M which will hold Beta, b.i, and H.b.i.
 
 \item{Beta}{N by p matrix consisting of N posterior samples of p variables}
-\item{b.i}{the values of the tuning parameter}
-\item{H.b.i}{the estimated number of signals corresponding to each b.i}
+\item{b.i}{the user specified vector holding the tuning parameter values}
+\item{H.b.i}{the estimated number of signals of unmeric data type corresponding to each b.i}
 }
 \description{
 Sequential2Means function will take as input X: design matrix, Y : response vector, t: vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm. The function will return a list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.

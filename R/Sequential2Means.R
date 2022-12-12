@@ -1,9 +1,9 @@
 #' Variable selection using shrinkage priors :: numNoiseCoeff
 #'
-#' @param Beta.i ith row sample of N by p matrix consisting of N posterior samples of p variables
+#' @param Beta.i N by p matrix consisting of N posterior samples of p variables
 #' @param b.i_r tuning parameter value from Sequential 2-means (S2M) variable selection algorithm.
 #'
-#' @return number of noise coefficients
+#' @return number of noise coefficients of numeric data type
 #'
 numNoiseCoeff <- function(Beta.i, b.i_r) {
   # perform k means for sequential 2 means to prune the noise coefficients
@@ -32,18 +32,18 @@ numNoiseCoeff <- function(Beta.i, b.i_r) {
 #' Sequential2Means function will take as input X: design matrix, Y : response vector, t: vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm. The function will return a list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
 #'
 #' @export
-#' @param X Design matrix
-#' @param Y Response vector
-#' @param b.i Vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm.
-#' @param prior Shrinkage prior distribution over the Beta. Available options are ridge regression: prior="rr" or prior="ridge", lasso regression: prior="lasso", horseshoe regression: prior="hs" or prior="horseshoe", and horseshoe+ regression : prior="hs+" or prior="horseshoe+"
-#' @param n.samples Number of posterior samples to generate.
-#' @param burnin Number of burn-in samples.
+#' @param X Design matrix of dimension n X p, where n = total data points and p = total number of features
+#' @param Y Response vector of dimension n X 1
+#' @param b.i Vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm of dimension specified by user.
+#' @param prior Shrinkage prior distribution over the Beta. Available options are ridge regression: prior="rr" or prior="ridge", lasso regression: prior="lasso", horseshoe regression: prior="hs" or prior="horseshoe", and horseshoe+ regression : prior="hs+" or prior="horseshoe+" ( String data type)
+#' @param n.samples Number of posterior samples to generate of numeric data type
+#' @param burnin Number of burn-in samples of numeric data type
 #'
 #' @return A list S2M which will hold Beta, b.i, and H.b.i.
 #'
 #' \item{Beta}{N by p matrix consisting of N posterior samples of p variables}
-#' \item{b.i}{the values of the tuning parameter}
-#' \item{H.b.i}{the estimated number of signals corresponding to each b.i}
+#' \item{b.i}{the user specified vector holding the tuning parameter values}
+#' \item{H.b.i}{the estimated number of signals of unmeric data type corresponding to each b.i}
 #'
 #' @references
 #'
@@ -197,15 +197,15 @@ Sequential2Means <- function(X, Y, b.i, prior = "horseshoe+", n.samples = 5000, 
 #'
 #' @export
 #' @param Beta N by p matrix consisting of N posterior samples of p variables
-#' @param lower the lower bound of the chosen values of the tuning parameter
-#' @param upper the upper bound of the chosen values of the tuning parameter
-#' @param l the number of chosen values of the tuning parameter
+#' @param lower the lower bound of the chosen values of the tuning parameter of numeric data type.
+#' @param upper the upper bound of the chosen values of the tuning parameter of numeric data type.
+#' @param l the number of chosen values of the tuning parameter of numeric data type.
 #'
 #' @return A list S2M which will hold p, b.i, and H.b.i:
 #'
 #' \item{p}{total number of variables in the model}
-#' \item{b.i}{the values of the tuning parameter}
-#' \item{H.b.i}{the estimated number of signals corresponding to each b.i}
+#' \item{b.i}{the vector values of the tuning parameter specified by the user}
+#' \item{H.b.i}{the estimated number of signals corresponding to each b.i of numeric data type}
 #'
 #' @references
 #'

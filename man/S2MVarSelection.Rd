@@ -9,10 +9,10 @@ S2MVarSelection(Beta, H = 10)
 \arguments{
 \item{Beta}{matrix consisting of N posterior samples of p variables that is known either to user or from Sequential2Means function}
 
-\item{H}{Estimated number of signals obtained from the optimal.b.i function}
+\item{H}{Estimated number of signals obtained from the optimal.b.i function of numeric data type}
 }
 \value{
-Indices of important subset of variables
+a vector containing indices of important subset of variables of dimension H X 1.
 }
 \description{
 S2MVarSelection function will take S2M: a list obtained from the 2Means.variables function and H: the estimated number of signals obtained from the optimal.b.i function. This will give out the important subset of variables for the Gaussian Linear model.

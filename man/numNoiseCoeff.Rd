@@ -7,12 +7,12 @@
 numNoiseCoeff(Beta.i, b.i_r)
 }
 \arguments{
-\item{Beta.i}{ith row sample of N by p matrix consisting of N posterior samples of p variables}
+\item{Beta.i}{N by p matrix consisting of N posterior samples of p variables}
 
 \item{b.i_r}{tuning parameter value from Sequential 2-means (S2M) variable selection algorithm.}
 }
 \value{
-number of noise coefficients
+number of noise coefficients of numeric data type
 }
 \description{
 Variable selection using shrinkage priors :: numNoiseCoeff

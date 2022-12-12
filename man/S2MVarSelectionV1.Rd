@@ -9,10 +9,10 @@ S2MVarSelectionV1(S2M, H = 10)
 \arguments{
 \item{S2M}{List obtained from the 2Means.variables function}
 
-\item{H}{Estimated number of signals obtained from the optimal.b.i function}
+\item{H}{Estimated number (numeric) of signals obtained from the optimal.b.i function}
 }
 \value{
-Indices of important subset of variables for the Gaussian Linear model
+a vector of indices of important subset of variables for the Gaussian Linear modelof shape H X 1
 }
 \description{
 S2MVarSelectionV1 function will take S2M: a list obtained from the 2Means.variables function and H: the estimated number of signals obtained from the optimal.b.i function. This will give out the important subset of variables for the Gaussian Linear model.

@@ -9,18 +9,18 @@ Sequential2MeansBeta(Beta, lower, upper, l)
 \arguments{
 \item{Beta}{N by p matrix consisting of N posterior samples of p variables}
 
-\item{lower}{the lower bound of the chosen values of the tuning parameter}
+\item{lower}{the lower bound of the chosen values of the tuning parameter of numeric data type.}
 
-\item{upper}{the upper bound of the chosen values of the tuning parameter}
+\item{upper}{the upper bound of the chosen values of the tuning parameter of numeric data type.}
 
-\item{l}{the number of chosen values of the tuning parameter}
+\item{l}{the number of chosen values of the tuning parameter of numeric data type.}
 }
 \value{
 A list S2M which will hold p, b.i, and H.b.i:
 
 \item{p}{total number of variables in the model}
-\item{b.i}{the values of the tuning parameter}
-\item{H.b.i}{the estimated number of signals corresponding to each b.i}
+\item{b.i}{the vector values of the tuning parameter specified by the user}
+\item{H.b.i}{the estimated number of signals corresponding to each b.i of numeric data type}
 }
 \description{
 Sequential2MeansBeta function will take as input Beta : N by p matrix consisting of N posterior samples of p variables, lower : the lower bound of the chosen values of the tuning parameter, upper : the upper bound of the chosen values of the tuning parameter, and l :the number of chosen values of the tuning parameter. The function will return a list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
