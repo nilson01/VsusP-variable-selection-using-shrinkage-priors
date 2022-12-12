@@ -41,31 +41,31 @@ Sequential2Means function will take as input X: design matrix, Y : response vect
 # Example 1: Gaussian Model and Horseshoe prior
 n <- 100
 p <- 20
-X <- matrix(rnorm(n*p), n, p)
+X <- matrix(rnorm(n * p), n, p)
 beta <- exp(rnorm(p))
 Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
-b.i = seq(0, 1, 0.05)
+b.i <- seq(0, 1, 0.05)
 
 # Sequential2Means with horseshoe+ using gibbs sampling
 # recommended n.samples is 5000 and burning is 2000
-S2M = Sequential2Means(X, Y, b.i, "horseshoe+", 200, 100)
-Beta = S2M$Beta
-H.b.i = S2M$H.b.i
+S2M <- Sequential2Means(X, Y, b.i, "horseshoe+", 200, 100)
+Beta <- S2M$Beta
+H.b.i <- S2M$H.b.i
 
 # -----------------------------------------------------------------
 # Example 2: Gaussian Model and ridge prior
 
 n <- 100
 p <- 20
-X <- matrix(rnorm(n*p), n, p)
+X <- matrix(rnorm(n * p), n, p)
 beta <- exp(rnorm(p))
 Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
-b.i = seq(0, 1, 0.05)
+b.i <- seq(0, 1, 0.05)
 # Sequential2Means with ridge regression using gibbs sampling
 # recommended n.samples is 5000 and burning is 2000
-S2M = Sequential2Means(X, Y, b.i, "ridge", 200, 100)
-Beta = S2M$Beta
-H.b.i = S2M$H.b.i
+S2M <- Sequential2Means(X, Y, b.i, "ridge", 200, 100)
+Beta <- S2M$Beta
+H.b.i <- S2M$H.b.i
 
 }
 \references{

@@ -21,19 +21,18 @@ S2MVarSelection function will take S2M: a list obtained from the 2Means.variable
 
 n <- 100
 p <- 20
-X <- matrix(rnorm(n*p), n, p)
+X <- matrix(rnorm(n * p), n, p)
 beta <- exp(rnorm(p))
 Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
-df <- data.frame(X,Y)
+df <- data.frame(X, Y)
 # Fit a model using gaussian horseshoe+ for 200 samples
 # # recommended n.samples is 5000 and burning is 2000
-rv.hs <- bayesreg::bayesreg(Y~. ,df, "gaussian", "horseshoe+", 200, 100)
+rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 200, 100)
 
-Beta = rv.hs$beta
-H = 12
-impVariablesGLM = S2MVarSelection(Beta, H)
+Beta <- rv.hs$beta
+H <- 12
+impVariablesGLM <- S2MVarSelection(Beta, H)
 impVariablesGLM
-
 
 }
 \references{

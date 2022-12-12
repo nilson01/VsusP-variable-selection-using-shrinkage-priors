@@ -1,16 +1,15 @@
 test_that("S2MVarSelection works", {
-
   # Data Generation
 
   n <- 100
   p <- 20
-  X <- matrix(rnorm(n*p), n, p)
+  X <- matrix(rnorm(n * p), n, p)
   beta <- exp(rnorm(p))
   Y <- X %*% beta + rnorm(n, 0, 1)
-  df <- data.frame(X,Y)
-  rv.hs <- bayesreg::bayesreg(Y~. ,df, "gaussian", "horseshoe+", 150, 100)
-  Beta = t(rv.hs$beta)
-  H = 12
+  df <- data.frame(X, Y)
+  rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 150, 100)
+  Beta <- t(rv.hs$beta)
+  H <- 12
 
   #--------------------- S2MVarSelection -----------------------#
 
@@ -18,7 +17,7 @@ test_that("S2MVarSelection works", {
   testthat::expect_error(S2MVarSelection(NULL, H))
 
   # Check for matrix data type of Beta
-  testthat::expect_error(S2MVarSelection(Beta[,1], H))
+  testthat::expect_error(S2MVarSelection(Beta[, 1], H))
 
   # Check for NULL or NaN values for H
   testthat::expect_error(S2MVarSelection(Beta, NULL))
@@ -30,7 +29,7 @@ test_that("S2MVarSelection works", {
   testthat::expect_length((S2MVarSelection(Beta, H)), H)
 
   # Check for H must be less than total covariates.
-  testthat::expect_error(S2MVarSelection(Beta, p+50))
+  testthat::expect_error(S2MVarSelection(Beta, p + 50))
 
   #--------------------- S2MVarSelectionV1 ---------------------#
 
@@ -40,13 +39,13 @@ test_that("S2MVarSelection works", {
     abs.post.median[i] <- stats::median(abs(Beta[, i]))
   }
 
-  S2M = list(p = p, abs.post.median=abs.post.median)
+  S2M <- list(p = p, abs.post.median = abs.post.median)
 
   # Check for NULL or NaN values of abs.post.median
   testthat::expect_error(S2MVarSelectionV1(NULL, H))
 
   # Check for vector data type of abs.post.median
-  testthat::expect_error(S2MVarSelectionV1(list(abs.post.median="ABC"), H))
+  testthat::expect_error(S2MVarSelectionV1(list(abs.post.median = "ABC"), H))
 
   # Check for NULL or NaN values for H
   testthat::expect_error(S2MVarSelectionV1(S2M, NULL))
@@ -55,10 +54,10 @@ test_that("S2MVarSelection works", {
   testthat::expect_error(S2MVarSelectionV1(S2M, "H"))
 
   # Check for non negative values in abs.post.median
-  testthat::expect_error(S2MVarSelectionV1(S2M = list(abs.post.median=c(-1,-2,3)), "H"))
+  testthat::expect_error(S2MVarSelectionV1(S2M = list(abs.post.median = c(-1, -2, 3)), "H"))
 
   # Check for H must be less than total covariates.
-  testthat::expect_error(S2MVarSelection(Beta, p+50))
+  testthat::expect_error(S2MVarSelection(Beta, p + 50))
 
   # Check for vector data type of abs.post.median
   testthat::expect_length(S2MVarSelectionV1(S2M, H), H)
@@ -66,15 +65,11 @@ test_that("S2MVarSelection works", {
   #--------------------- OptimalHbi ---------------------#
 
   # Check for NULL or NaN values in b.i
-  testthat::expect_error(OptimalHbi(NULL, Hbi = c(17,12,12,12,12,6,6,6,4,5)))
+  testthat::expect_error(OptimalHbi(NULL, Hbi = c(17, 12, 12, 12, 12, 6, 6, 6, 4, 5)))
 
   # Check for vector data type of b.i
-  testthat::expect_error(OptimalHbi(matrix(rnorm(4),2,2), Hbi = c(17,12,12,12,12,6,6,6,4,5)))
+  testthat::expect_error(OptimalHbi(matrix(rnorm(4), 2, 2), Hbi = c(17, 12, 12, 12, 12, 6, 6, 6, 4, 5)))
 
   # Check for the length of b.i and H.b.i
-  testthat::expect_error(OptimalHbi(c(1,2,4), Hbi = c(17,12,12,12,12,6,6,6,4,5)))
-
-
+  testthat::expect_error(OptimalHbi(c(1, 2, 4), Hbi = c(17, 12, 12, 12, 12, 6, 6, 6, 4, 5)))
 })
-
-
