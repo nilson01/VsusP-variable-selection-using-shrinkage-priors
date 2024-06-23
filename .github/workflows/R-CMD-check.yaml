@@ -37,14 +37,12 @@ jobs:
         run: |
           curl -sL "https://yihui.org/tinytex/install-bin-unix.sh" | sh
           echo "PATH=${HOME}/bin:${PATH}" >> $GITHUB_ENV
-
       - name: Install TinyTeX on Windows
         if: matrix.config.os == 'windows-latest'
         run: |
           [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
           Invoke-WebRequest -Uri "https://yihui.org/tinytex/install-bin-windows.bat" -OutFile "install-tinytex.bat"
           Start-Process -FilePath "install-tinytex.bat" -Wait
-
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
@@ -53,6 +51,6 @@ jobs:
         run: |
           R CMD build .
           R CMD check --as-cran *tar.gz
+      - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-
