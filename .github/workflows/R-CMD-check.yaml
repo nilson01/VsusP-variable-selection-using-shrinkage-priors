@@ -51,6 +51,7 @@ jobs:
         run: |
           R CMD build .
           R CMD check --as-cran *tar.gz
+        shell: bash
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
