@@ -356,14 +356,19 @@ impVariablesGLM
 
 \newpage
 
-
 # References
-- **Li, H., & Pati, D.**: "Variable selection using shrinkage priors." Computational Statistics & Data Analysis, 107, pp.107-119.
-- **Makalic, E. & Schmidt, D. F. (2016)**: "High-Dimensional Bayesian Regularised Regression with the BayesReg Package." arXiv:1611.06649.
-- **Bhattacharya, A., Pati, D., Pillai, N.S., & Dunson, D.B. (2015)**: "Dirichlet-laplace priors for optimal shrinkage." J. Amer. Statist. Assoc. 110 (512), 1479–1490.
-- **Rosenwald, A., et al. (2002)**: "The use of molecular profiling to predict survival after chemotherapy for diffuse large-b-cell lymphoma." New Engl. J. Med. 346 (25), 1937–1947.
-- **Bhattacharya, A., & Dunson, D. (2011)**: "Sparse Bayesian infinite factor models." Biometrika 98 (2), 291–306.
 
+- **Li, H., & Pati, D. (2020) **  "Variable Selection Using Shrinkage Priors." Computational Statistics & Data Analysis, 107, pp.107-119. <doi:10.1016/j.csda.2020.106839>.
+
+- **Makalic, E. & Schmidt, D. F. (2016)** "High-Dimensional Bayesian Regularised Regression with the BayesReg Package." arXiv:1611.06649 <doi:10.48550/arXiv.1611.06649>.
+
+- **Bhattacharya, A., Pati, D., Pillai, N.S., & Dunson, D.B. (2015)** “Dirichlet-Laplace Priors for Optimal Shrinkage.” Journal of the American Statistical Association, 110 (512), 1479–1490. <doi:10.1080/01621459.2015.1044091>.
+
+- **Rosenwald, A., et al. (2002)** “The Use of Molecular Profiling to Predict Survival After Chemotherapy for Diffuse Large-B-Cell Lymphoma.” New England Journal of Medicine, 346 (25), 1937–1947. <doi:10.1056/NEJMoa012914>.
+
+- **Bhattacharya, A., & Dunson, D. (2011)** “Sparse Bayesian Infinite Factor Models.” Biometrika, 98 (2), 291–306. <doi:10.1093/biomet/asq076>.
+
+For further information and updates, visit the VsusP package repository at <https://github.com/nilson01/VsusP>.
 
 
 

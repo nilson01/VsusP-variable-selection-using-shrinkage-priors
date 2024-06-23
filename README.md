@@ -97,5 +97,5 @@ Check the documentation for the different functions on options and details, usin
 
 R Core Team (2022). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL <https://www.R-project.org/>.
 
-Li, H. and Pati, D., 2017. Variable selection using shrinkage priors. Computational Statistics & Data Analysis, 107, pp.107-119.
-# VsusP-variable-selection-using-shrinkage-priors
+
+**Li, H., & Pati, D. (2020) **  "Variable Selection Using Shrinkage Priors." Computational Statistics & Data Analysis, 107, pp.107-119. <doi:10.1016/j.csda.2020.106839>.
