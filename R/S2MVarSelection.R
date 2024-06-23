@@ -5,7 +5,7 @@
 
 #'  Variable selection using shrinkage priors :: S2MVarSelection
 #'
-#' S2MVarSelection function will take S2M: a list obtained from the 2Means.variables function and H: the estimated number of signals obtained from the optimal.b.i function. This will give out the important subset of variables for the Gaussian Linear model.
+#' S2MVarSelection function will take S2M: a list obtained from the 2Means.variables function and H: the estimated number of signals obtained from the optimal.H.b.i function. This will give out the important subset of variables for the Gaussian Linear model.
 #'
 #' @export
 #' @param Beta matrix consisting of N posterior samples of p variables that is known either to user or from Sequential2Means function
@@ -90,7 +90,7 @@ S2MVarSelection <- function(Beta, H = 10) {
 
 #'  Variable selection using shrinkage priors :: OptimalHbi
 #'
-#' OptimalHbi function will take b.i and H.b.i as input which comes from the result of TwoMeans function. It will return H: the optimal value of the tuning parameter.
+#' OptimalHbi function will take b.i and H.b.i as input which comes from the result of TwoMeans function. It will return plot from which you can infer about H: the optimal value of the tuning parameter.
 #'
 #' @export
 #' @param bi a vector holding the values of the tuning parameter specified by the user
@@ -145,7 +145,8 @@ OptimalHbi <- function(bi, Hbi) {
   }
 
   # plotting tuning parameters Vs number of important variables counts
-  plot(bi, Hbi)
+  plot(bi, Hbi, type = 'b', xlab = "Tuning parameter b.i", ylab = "Estimated number of signals (H.b.i)",
+       main = "Plot of b.i vs H.b.i")
 }
 
 ################################################################
@@ -205,3 +206,4 @@ S2MVarSelectionV1 <- function(S2M, H = 10) {
 
   return(impVariablesGLM)
 }
+

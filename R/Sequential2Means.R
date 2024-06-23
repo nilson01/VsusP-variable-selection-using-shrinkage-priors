@@ -43,7 +43,7 @@ numNoiseCoeff <- function(Beta.i, b.i_r) {
 #'
 #' \item{Beta}{N by p matrix consisting of N posterior samples of p variables}
 #' \item{b.i}{the user specified vector holding the tuning parameter values}
-#' \item{H.b.i}{the estimated number of signals of unmeric data type corresponding to each b.i}
+#' \item{H.b.i}{the estimated number of signals of numeric data type corresponding to each b.i}
 #'
 #' @references
 #'
