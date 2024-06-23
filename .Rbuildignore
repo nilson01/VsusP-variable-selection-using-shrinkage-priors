@@ -5,3 +5,7 @@
 ^codecov\.yml$
 ^\.gitlab-ci\.yml$
 ^README.Rmd
+^\.\.pdf$
+^VsusP\.pdf$
+^doc$
+^Meta$

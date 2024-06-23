@@ -106,8 +106,11 @@ This example demonstrates how to use `VsusP` to perform variable selection throu
 
 ```{r example-setup}
 # Assuming MASS is installed, if not uncomment the next line
-# install.packages("MASS")
+if (!requireNamespace("MASS", quietly = TRUE)) {
+    install.packages("MASS")
+}
 library(MASS)
+
 
 # Set seed for reproducibility
 set.seed(20221208)
@@ -161,6 +164,195 @@ impVariablesGLM
 
 
 
+
+# Detailed Function Descriptions
+
+## Sequential2Means
+
+**Purpose:** Implements a sequential two-means clustering to segregate significant variables from noise, crucial for high-dimensional data settings.
+This function identifies the significant variables from the results obtained from the Sequential2Means function.
+It uses the posterior distribution of coefficients to determine which variables play a crucial role in explaining
+the response variable in a Gaussian linear model setting. The selection is based on the highest posterior median
+of absolute coefficients, ensuring that the most consistently relevant variables are chosen, minimizing both type I
+and type II errors.
+
+**Parameters:**
+- **X**: Design matrix (n x p) where n is the number of observations and p is the number of variables.
+- **Y**: Response vector (n x 1).
+- **b.i**: Vector of tuning parameters.
+- **prior**: Type of shrinkage prior (e.g., "ridge", "lasso", "horseshoe").
+- **n.samples**: Number of MCMC samples.
+- **burnin**: Number of burn-in samples.
+
+**Output:** Returns a list containing:
+- **Beta**: Coefficient matrix across all iterations.
+- **b.i**: Tested values of tuning parameters.
+- **H.b.i**: Estimated number of significant variables for each tuning parameter value.
+
+**Process:** Iteratively refines variable classification into signal or noise based on the Bayesian posterior distributions.
+
+```{r sequential2means-example}
+set.seed(20221208)
+n <- 100
+p <- 20
+X <- matrix(rnorm(n * p), n, p)
+Y <- X %*% exp(rnorm(p)) + rnorm(n)
+b.i <- seq(0, 1, length.out = 20)
+result <- VsusP::Sequential2Means(X, as.vector(Y), b.i, prior = "horseshoe+", n.samples = 5000, burnin = 2000)
+
+cat("Beta: \n")
+print(result$Beta[1:5, ])
+cat("\n\n")
+
+cat("H.b.i: \n")
+print(result$H.b.i)
+
+```
+
+
+## OptimalHbi
+
+**Purpose:** Determines the optimal number of significant variables by assessing stability across tuning parameters, ensuring balanced model complexity.
+
+This function determines the optimal number of significant variables ('H') by assessing the stability across
+different values of tuning parameters. It is pivotal for ensuring the model neither overfits nor underfits, providing
+a robust means to handle model complexity and accuracy efficiently.
+
+The optimal value of the tuning parameter 'H', representing the best compromise between model complexity
+and fitting accuracy. This function plots 'bi' vs 'Hbi' and the user should select 'H' at the point of sharpest change
+in the plot, indicating the most stable variable selection.
+
+
+**Parameters:**
+- **bi**: Vector of tuning parameters.
+- **Hbi**: Estimated number of signals for each tuning parameter.
+
+**Output:** Plot to select optimal 'H' value, indicating the most appropriate number of significant variables to prevent overfitting or underfitting.
+
+**Process:** Select the 'H' at the point of the sharpest change in the plot of 'bi' vs 'Hbi', indicative of stable variable selection.
+
+```{r optimal-hbi-example}
+VsusP::OptimalHbi(b.i, result$H.b.i)
+```
+
+## S2MVarSelection
+
+**Purpose:** Extracts a subset of significant variables based on the highest posterior medians of absolute coefficients from the Sequential2Means output.
+An alternative to S2MVarSelection that provides a more direct approach to variable selection, using refined criteria for determining significance directly from the clustering outputs of Sequential2Means.
+It leverages detailed clustering information, specifically the median absolute values of the coefficients, to prioritize variables, providing a method that might be more responsive to subtle variations in data structure and signal intensity.
+
+**Parameters:**
+- **Beta**: Matrix of posterior samples.
+- **H**: Number of significant variables estimated.
+
+**Output:** Indices of significant variables, directly identifying key predictors.
+
+**Process:** Selects variables whose coefficients show consistent importance across samples, minimizing error rates.
+
+```{r s2mvar-selection-example}
+H <- 17 
+significantVariables <- VsusP::S2MVarSelection(result$Beta, H)
+cat("Significant Variables: \n")
+print(significantVariables)
+
+```
+
+## Sequential2MeansBeta
+
+**Purpose:** Extends the functionality of `Sequential2Means` by allowing the specification of a range for the tuning parameters, enabling more flexible model testing.
+This function extends Sequential2Means by allowing for precise control over the range and density of tuning parameters to be tested, accommodating advanced scenarios where the distribution of signals is hypothesized to be non-uniform.
+Similar to Sequential2Means, it returns a list with p (number of variables), b.i (tested tuning parameters), and H.b.i (estimated significant variables for each tuning parameter), facilitating detailed analysis of variable significance across a customized range of model complexities.
+
+**Parameters:**
+- **Beta**: Matrix of N by p dimensions consisting of N posterior samples of p variables.
+- **lower**: Lower bound of the tuning parameter values.
+- **upper**: Upper bound of the tuning parameter values.
+- **l**: Number of points within the tuning parameter range.
+
+**Output:** Similar to `Sequential2Means`, it returns a list that includes:
+- **p**: Number of variables.
+- **b.i**: Vector of tested tuning parameters.
+- **H.b.i**: Estimated number of significant variables for each tuning parameter.
+
+**Process:** Evaluates the significance of coefficients across a user-defined range of tuning parameters, enhancing the ability to discern the underlying signal structure.
+
+```{r sequential2meansbeta-example}
+Beta <- result$Beta
+lower <- 0
+upper <- 1
+l <- 20
+
+S2MBeta = VsusP::Sequential2MeansBeta(Beta, lower, upper, l)
+
+cat("p : \n")
+print(S2MBeta$p)
+cat("\n\n")
+
+
+cat("bi : \n")
+print(S2MBeta$b.i)
+cat("\n\n")
+
+
+cat("Hbi : \n")
+print(S2MBeta$H.b.i)
+```
+
+# Simulation example
+
+
+```{r Simulation}
+
+library(MASS)
+library(VsusP)
+
+set.seed(12345) 
+
+n <- 50
+p <- 300
+r <- 10
+rho <- 0.95
+
+Sigma <- diag(1, p)
+block_size <- 5
+num_blocks <- p / block_size
+
+for (b in 0:(num_blocks - 1)) {
+  block_start <- b * block_size + 1
+  block_end <- min(p, block_start + block_size - 1)
+  Sigma[block_start:block_end, block_start:block_end] <- rho
+  diag(Sigma[block_start:block_end, block_start:block_end]) <- 1
+}
+
+Sigma <- Sigma + diag(0.001, p)  # Ensure positive definiteness
+
+X <- mvrnorm(n, mu = rep(0, p), Sigma = Sigma)
+beta_true <- c(6, rep(3, 4), rep(1, 5), rep(0, p - 10))
+Y <- as.vector(X %*% beta_true + rnorm(n))
+
+var_y <- var(Y)
+b_i_range <- seq(0.5 * var_y, 10 * var_y, length.out = 20)  # Check the scale of var(Y)
+
+results <- Sequential2Means(X = X, Y = Y, b.i = b_i_range, prior = "horseshoe+", n.samples = 5000, burnin = 2000)
+
+plot(b_i_range, results$H.b.i, type = 'b', xlab = "Tuning parameter b.i", ylab = "Estimated number of signals (H.b.i)",
+     main = "Plot of b.i vs H.b.i for Simulation 2")
+
+optimal_b_i <- b_i_range[which.min(results$H.b.i)]
+optimal_Hbi <- min(results$H.b.i)
+
+cat("Optimal b.i:", optimal_b_i, "\n")
+cat("Optimal H.b.i:", optimal_Hbi, "\n")
+
+H <- optimal_Hbi
+# Variable selection
+Beta <- results$Beta
+
+impVariablesGLM <- S2MVarSelection(Beta, H)
+impVariablesGLM
+
+
+```
 
 \newpage
 
