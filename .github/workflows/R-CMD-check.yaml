@@ -37,13 +37,11 @@ jobs:
           curl -sL "https://yihui.org/tinytex/install-bin-unix.sh" | sh
           echo "PATH=${HOME}/bin:${PATH}" >> $GITHUB_ENV
 
-      - name: Install TeX Live on Windows
+     - name: Install TeX Live on Windows
         if: matrix.config.os == 'windows-latest'
         uses: teatimeguest/setup-texlive-action@v3
         with:
-          packages: |
-            scheme-basic
-            inconsolata
+          packages: scheme-full
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
