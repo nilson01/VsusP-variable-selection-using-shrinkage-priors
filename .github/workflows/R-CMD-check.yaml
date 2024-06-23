@@ -40,9 +40,10 @@ jobs:
       - name: Install TinyTeX on Windows
         if: matrix.config.os == 'windows-latest'
         run: |
-          choco install r.project
-          Rscript -e "install.packages('tinytex', repos = 'https://cran.rstudio.com')"
-          Rscript -e "tinytex::install_tinytex()"
+          Invoke-WebRequest -Uri "https://yihui.org/tinytex/TinyTeX-1.zip" -OutFile "TinyTeX-1.zip"
+          Expand-Archive -Path "TinyTeX-1.zip" -DestinationPath "$Env:ProgramFiles\TinyTeX"
+          $env:Path += ";$Env:ProgramFiles\TinyTeX\bin\win32"
+          [System.Environment]::SetEnvironmentVariable('Path', $env:Path, [System.EnvironmentVariableTarget]::Machine)
         shell: pwsh
 
       - uses: r-lib/actions/setup-r-dependencies@v2
