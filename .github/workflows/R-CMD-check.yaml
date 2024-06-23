@@ -39,6 +39,11 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
+      - name: Install TinyTeX
+        run: |
+          wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh
+          echo "PATH=${HOME}/bin:${PATH}" >> $GITHUB_ENV
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
@@ -47,3 +52,4 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
+
