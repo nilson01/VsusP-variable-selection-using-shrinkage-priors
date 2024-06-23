@@ -41,7 +41,9 @@ jobs:
         if: matrix.config.os == 'windows-latest'
         uses: teatimeguest/setup-texlive-action@v3
         with:
-          packages: scheme-basic
+          packages: |
+            scheme-basic
+            inconsolata
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
