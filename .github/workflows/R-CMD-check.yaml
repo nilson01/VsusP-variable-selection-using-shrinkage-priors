@@ -8,6 +8,12 @@ on:
 
 name: R-CMD-check
 
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
 jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
@@ -48,8 +54,10 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
 
-      - uses: r-lib/actions/check-r-package@v2
+      - name: Check R package as CRAN
+        run: |
+          R CMD build .
+          R CMD check --as-cran *tar.gz
         with:
           upload-snapshots: true
-
 
