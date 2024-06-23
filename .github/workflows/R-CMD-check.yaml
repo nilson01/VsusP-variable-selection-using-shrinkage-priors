@@ -31,9 +31,18 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-      - name: Setup LaTeX
-        uses: xu-cheng/latex-action@v2
-        if: matrix.config.os == 'windows-latest'
+      # - name: Install TinyTeX on Unix-like systems
+      #   if: matrix.config.os != 'windows-latest'
+      #   run: |
+      #     curl -sL "https://yihui.org/tinytex/install-bin-unix.sh" | sh
+      #     echo "PATH=${HOME}/bin:${PATH}" >> $GITHUB_ENV
+      #
+      # - name: Install TinyTeX on Windows
+      #   if: matrix.config.os == 'windows-latest'
+      #   run: |
+      #     Rscript -e "install.packages('tinytex', repos = 'http://cran.rstudio.com')"
+      #     Rscript -e "tinytex::install_tinytex()"
+      #   shell: bash
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -48,4 +57,3 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-
