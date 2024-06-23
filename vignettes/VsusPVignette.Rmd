@@ -1,19 +1,177 @@
 ---
-title: "VsusPVignette"
-output: rmarkdown::html_vignette
+title: "Variable Selection using Shrinkage Priors (VsusP)"
+author: "Nilson Chapagain, Debdeep Pati"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::pdf_document:
+    number_sections: true
+    toc: true
+    toc_depth: 3
 vignette: >
-  %\VignetteIndexEntry{VsusPVignette}
+  %\VignetteIndexEntry{Variable Selection using Shrinkage Priors (VsusP)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+header-includes:
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+  - \usepackage{titlesec}
+  - \titlespacing*{\section}{0pt}{1em}{0.5em}
+  - \titlespacing*{\subsection}{0pt}{0.75em}{0.5em}
+  - \titlespacing*{\subsubsection}{0pt}{0.5em}{0.25em}
+  - \usepackage{anyfontsize}
+  - \usepackage{lmodern}
+  - \renewcommand{\normalsize}{\fontsize{12}{14}\selectfont}
+  - \renewcommand{\large}{\fontsize{14}{16}\selectfont}
+  - \renewcommand{\Large}{\fontsize{16}{18}\selectfont}
+  - \renewcommand{\LARGE}{\fontsize{18}{20}\selectfont}
+  - \renewcommand{\huge}{\fontsize{20}{24}\selectfont}
+  - \renewcommand{\Huge}{\fontsize{22}{26}\selectfont}
+  - \usepackage{tocloft}
+  - \renewcommand{\cftsecnumwidth}{2.5em}
+  - \renewcommand{\cftsubsecnumwidth}{3em}
+  - \renewcommand{\cftsubsubsecnumwidth}{3.5em}
+  - \renewcommand{\cftsecfont}{\normalfont\bfseries}
+  - \renewcommand{\cftsubsecfont}{\normalfont}
+  - \renewcommand{\cftsubsubsecfont}{\normalfont}
+  - \setcounter{secnumdepth}{3}
+  - \setcounter{tocdepth}{3}
+  - \renewcommand{\thesection}{\arabic{section}}
+  - \renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+  - \renewcommand{\thesubsubsection}{\thesubsection.\arabic{subsubsection}}
+  - \setcounter{section}{0}
+  - \usepackage{setspace}
+  - \doublespacing
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
 ```
 
-```{r setup}
+\newpage
+
+# Introduction
+
+**VsusP** provides robust methods for variable selection within Gaussian linear models, utilizing shrinkage priors to enhance the analysis of high-dimensional data. The main approach involves a two-step process where the number of significant variables is first determined by clustering coefficients, followed by selection based on posterior medians.
+
+## Installation
+You can install the most recent version of 'VsusP' package from [GitHub](https://github.com/nilson01/VsusP-variable-selection-using-shrinkage-priors) using the following commands:
+
+```{r, eval = FALSE}
+# Plain installation
+devtools::install_github("nilson01/VsusP")
+
+# For installation with vignette
+devtools::install_github("nilson01/VsusP", build_vignettes = TRUE)
+
+# load the library
 library(VsusP)
+
 ```
+
+
+## Methodology
+
+
+### Theoretical Background
+
+Variable selection in high-dimensional models has garnered significant interest, especially for its applications in complex biological and environmental research. Traditional methods using spike-and-slab priors face computational challenges in high dimensions, motivating the use of continuous shrinkage priors. These priors facilitate computation and interpretability by allowing for a mixture of global and local shrinkage effects, thus handling high-dimensional sparse vectors more efficiently.
+
+In the context of Gaussian linear models:
+\[ Y = X\beta + \epsilon, \quad \epsilon \sim N(0, \sigma^2 I_n) \]
+
+where \( Y \) is the response vector, \( X \) is the covariate matrix, and \( \beta \) is the coefficient vector. The continuous shrinkage priors, such as the horseshoe prior, have shown promise in variable selection by providing a balance between sparsity and signal retention.
+
+### Main Results
+
+The `VsusP` package implements a novel post-MCMC variable selection method using shrinkage priors. This method consists primarily of two approaches: the 2-Means (2-M) and Sequential 2-Means (S2M) variable selection. Both methods are designed to address high-dimensional challenges by efficiently identifying significant variables without the need for extensive tuning parameters.
+
+### Sequential 2-Means (S2M) Variable Selection
+
+The S2M method is a refined approach that aims to minimize masking errors, which often occur with heterogeneous signal strengths among variables. It involves iterative clustering of absolute coefficients, adjusting clusters based on a dynamic threshold parameter `b`, which is crucial for distinguishing between signal and noise.
+
+#### Algorithm
+
+1. Cluster the absolute values of coefficients using the k-means algorithm.
+2. Continuously adjust the clustering by recalculating the mean of each cluster and adjusting the membership based on the threshold `b`.
+3. Determine the set of significant variables based on the stability of cluster memberships across iterations.
+
+
+**Choosing Tuning Parameter \( b \)**:
+The tuning parameter \( b \) is chosen to balance the masking and swamping errors. A visual inspection of the plot of \( b_i \) vs. the number of significant variables helps in identifying the optimal value of \( b \).
+
+
+## Example
+
+This example demonstrates how to use `VsusP` to perform variable selection through simulated data:
+
+```{r example-setup}
+# Assuming MASS is installed, if not uncomment the next line
+# install.packages("MASS")
+library(MASS)
+
+# Set seed for reproducibility
+set.seed(20221208)
+
+# Simulate data
+sim.XY <- function(n, p, beta) {
+  X <- matrix(rnorm(n * p), n, p)
+  Y <- X %*% beta + rnorm(n)
+  return(list(X = X, Y = Y, beta = beta))
+}
+
+n <- 100
+p <- 20
+beta <- exp(rnorm(p))
+data <- sim.XY(n, p, beta)
+```
+
+### Applying Sequential2Means
+
+`Sequential2Means` is used to cluster the coefficients and estimate the number of significant variables:
+
+```{r s2m-apply}
+
+b.i <- seq(0, 1, by = 0.05)
+S2M <- VsusP::Sequential2Means(X = data$X, Y = as.vector(data$Y), b.i = b.i, prior = "horseshoe+", n.samples = 5000, burnin = 2000)
+Beta <- S2M$Beta
+H.b.i <- S2M$H.b.i
+```
+
+### Identifying Significant Variables
+
+Using the `OptimalHbi` function, the optimal number of significant variables is determined:
+
+```{r s2m-results}
+VsusP::OptimalHbi(bi = b.i, Hbi = H.b.i)
+
+optimal_b_i <- b.i[which.min(S2M$H.b.i)]
+optimal_Hbi <- min(S2M$H.b.i)
+
+cat("Optimal b.i: \n", optimal_b_i, "\n")
+cat("Optimal H.b.i: \n", optimal_Hbi, "\n")
+
+```
+
+```{r s2m-results important Variables}
+H <- 13
+# Variable selection
+impVariablesGLM <- VsusP::S2MVarSelection(Beta, H)
+impVariablesGLM
+```
+
+
+
+
+\newpage
+
+
+# References
+- **Li, H., & Pati, D.**: "Variable selection using shrinkage priors." Computational Statistics & Data Analysis, 107, pp.107-119.
+- **Makalic, E. & Schmidt, D. F. (2016)**: "High-Dimensional Bayesian Regularised Regression with the BayesReg Package." arXiv:1611.06649.
+- **Bhattacharya, A., Pati, D., Pillai, N.S., & Dunson, D.B. (2015)**: "Dirichlet-laplace priors for optimal shrinkage." J. Amer. Statist. Assoc. 110 (512), 1479–1490.
+- **Rosenwald, A., et al. (2002)**: "The use of molecular profiling to predict survival after chemotherapy for diffuse large-b-cell lymphoma." New Engl. J. Med. 346 (25), 1937–1947.
+- **Bhattacharya, A., & Dunson, D. (2011)**: "Sparse Bayesian infinite factor models." Biometrika 98 (2), 291–306.
+
+
+
+
