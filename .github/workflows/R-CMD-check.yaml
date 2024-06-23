@@ -40,8 +40,9 @@ jobs:
       - name: Install TinyTeX on Windows
         if: matrix.config.os == 'windows-latest'
         run: |
-          choco install tinytex
-        shell: pwsh
+          install.packages('tinytex', repos = 'http://cran.rstudio.com')
+          tinytex::install_tinytex()
+        shell: Rscript {0}
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
