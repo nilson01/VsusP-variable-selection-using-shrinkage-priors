@@ -2,8 +2,13 @@
 title: "Variable Selection using Shrinkage Priors (VsusP)"
 author: "Nilson Chapagain, Debdeep Pati"
 date: "`r Sys.Date()`"
-output: 
+output:
   rmarkdown::pdf_document:
+    number_sections: true
+    toc: true
+    toc_depth: 3
+  rmarkdown::html_document:
+    df_print: paged
     number_sections: true
     toc: true
     toc_depth: 3
