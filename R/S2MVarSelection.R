@@ -25,22 +25,22 @@
 #'
 #' @examples
 #'
-#' n <- 100
-#' p <- 20
+#' n <- 10
+#' p <- 5
 #' X <- matrix(rnorm(n * p), n, p)
 #' beta <- exp(rnorm(p))
 #' Y <- as.vector(X %*% beta + rnorm(n, 0, 1))
 #' df <- data.frame(X, Y)
 #' # Fit a model using gaussian horseshoe+ for 200 samples
 #' # # recommended n.samples is 5000 and burning is 2000
-#' rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 200, 100)
+#' rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 110, 100)
 #'
 #' Beta <- rv.hs$beta
-#' H <- 12
+#' H <- 3
 #' impVariablesGLM <- S2MVarSelection(Beta, H)
 #' impVariablesGLM
 #'
-S2MVarSelection <- function(Beta, H = 10) {
+S2MVarSelection <- function(Beta, H = 5) {
   # Check for NULL or NaN values in H
   if (is.null(H)) {
     stop(paste("H must not be NULL. "))
@@ -110,13 +110,13 @@ S2MVarSelection <- function(Beta, H = 10) {
 #'
 #' @examples
 #'
-#' n <- 100
-#' p <- 20
+#' n <- 10
+#' p <- 5
 #' X <- matrix(rnorm(n * p), n, p)
 #' beta <- exp(rnorm(p))
 #' Y <- as.vector(X %*% beta + rnorm(n, 0, 1))
 #' df <- data.frame(X, Y)
-#' rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 200, 100)
+#' rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 110, 100)
 #'
 #' Beta <- t(rv.hs$beta)
 #' lower <- 0
@@ -159,11 +159,11 @@ OptimalHbi <- function(bi, Hbi) {
 #'
 #' @export
 #' @param S2M List obtained from the 2Means.variables function
-#' @param H Estimated number (numeric) of signals obtained from the optimal.b.i function
+#' @param H Estimated number (numeric) of signals, obtained from the optimal.b.i function (default = newValue)
 #'
 #' @return a vector of indices of important subset of variables for the Gaussian Linear modelof shape H X 1
 #'
-S2MVarSelectionV1 <- function(S2M, H = 10) {
+S2MVarSelectionV1 <- function(S2M, H = 5) {
   # number of covariates
   p <- S2M$p
 

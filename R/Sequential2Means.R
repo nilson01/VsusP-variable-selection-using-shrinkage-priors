@@ -58,8 +58,8 @@ numNoiseCoeff <- function(Beta.i, b.i_r) {
 #' @examples
 #' # -----------------------------------------------------------------
 #' # Example 1: Gaussian Model and Horseshoe prior
-#' n <- 50
-#' p <- 10
+#' n <- 10
+#' p <- 5
 #' X <- matrix(rnorm(n * p), n, p)
 #' beta <- exp(rnorm(p))
 #' Y <- as.vector(X %*% beta + rnorm(n, 0, 1))
@@ -67,22 +67,22 @@ numNoiseCoeff <- function(Beta.i, b.i_r) {
 #'
 #' # Sequential2Means with horseshoe+ using gibbs sampling
 #' # recommended n.samples is 5000 and burning is 2000
-#' S2M <- Sequential2Means(X, Y, b.i, "horseshoe+", 200, 100)
+#' S2M <- Sequential2Means(X, Y, b.i, "horseshoe+", 110, 100)
 #' Beta <- S2M$Beta
 #' H.b.i <- S2M$H.b.i
 #'
 #' # -----------------------------------------------------------------
 #' # Example 2: Gaussian Model and ridge prior
 #'
-#' n <- 50
-#' p <- 10
+#' n <- 10
+#' p <- 5
 #' X <- matrix(rnorm(n * p), n, p)
 #' beta <- exp(rnorm(p))
 #' Y <- as.vector(X %*% beta + rnorm(n, 0, 1))
 #' b.i <- seq(0, 1, 0.05)
 #' # Sequential2Means with ridge regression using gibbs sampling
 #' # recommended n.samples is 5000 and burning is 2000
-#' S2M <- Sequential2Means(X, Y, b.i, "ridge", 200, 100)
+#' S2M <- Sequential2Means(X, Y, b.i, "ridge", 110, 100)
 #' Beta <- S2M$Beta
 #' H.b.i <- S2M$H.b.i
 #'
@@ -222,15 +222,15 @@ Sequential2Means <- function(X, Y, b.i, prior = "horseshoe+", n.samples = 5000, 
 #' # -----------------------------------------------------------------
 #' # Example 1: Gaussian Model and Horseshoe prior
 #'
-#' n <- 50
-#' p <- 10
+#' n <- 10
+#' p <- 5
 #' X <- matrix(rnorm(n * p), n, p)
 #' beta <- exp(rnorm(p))
 #' Y <- as.vector(X %*% beta + rnorm(n, 0, 1))
 #' df <- data.frame(X, Y)
 #'
 #' # beta samples for gaussian model using horseshow prior and gibbs sampling
-#' rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 200, 100)
+#' rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 110, 100)
 #'
 #' Beta <- t(rv.hs$beta)
 #' lower <- 0
@@ -242,13 +242,13 @@ Sequential2Means <- function(X, Y, b.i, prior = "horseshoe+", n.samples = 5000, 
 #' # -----------------------------------------------------------------
 #' # Example 2: normal model and lasso prior
 #'
-#' #' n <- 50
-#' p <- 10
+#' #' n <- 10
+#' p <- 5
 #' X <- matrix(rnorm(n * p), n, p)
 #' beta <- exp(rnorm(p))
 #' Y <- as.vector(X %*% beta + rnorm(n, 0, 1))
 #' df <- data.frame(X, Y)
-#' rv.hs <- bayesreg::bayesreg(Y ~ ., df, "normal", "lasso", 200, 100)
+#' rv.hs <- bayesreg::bayesreg(Y ~ ., df, "normal", "lasso", 150, 100)
 #'
 #' Beta <- t(rv.hs$beta)
 #' lower <- 0

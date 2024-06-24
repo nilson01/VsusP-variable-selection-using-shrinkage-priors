@@ -4,7 +4,7 @@
 \alias{S2MVarSelection}
 \title{Variable selection using shrinkage priors :: S2MVarSelection}
 \usage{
-S2MVarSelection(Beta, H = 10)
+S2MVarSelection(Beta, H = 5)
 }
 \arguments{
 \item{Beta}{matrix consisting of N posterior samples of p variables that is known either to user or from Sequential2Means function}
@@ -15,22 +15,22 @@ S2MVarSelection(Beta, H = 10)
 a vector containing indices of important subset of variables of dimension H X 1.
 }
 \description{
-S2MVarSelection function will take S2M: a list obtained from the 2Means.variables function and H: the estimated number of signals obtained from the optimal.b.i function. This will give out the important subset of variables for the Gaussian Linear model.
+S2MVarSelection function will take S2M: a list obtained from the 2Means.variables function and H: the estimated number of signals obtained from the optimal.H.b.i function. This will give out the important subset of variables for the Gaussian Linear model.
 }
 \examples{
 
-n <- 100
-p <- 20
+n <- 10
+p <- 5
 X <- matrix(rnorm(n * p), n, p)
 beta <- exp(rnorm(p))
 Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
 df <- data.frame(X, Y)
 # Fit a model using gaussian horseshoe+ for 200 samples
 # # recommended n.samples is 5000 and burning is 2000
-rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 200, 100)
+rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 110, 100)
 
 Beta <- rv.hs$beta
-H <- 12
+H <- 3
 impVariablesGLM <- S2MVarSelection(Beta, H)
 impVariablesGLM
 

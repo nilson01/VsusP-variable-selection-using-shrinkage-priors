@@ -21,7 +21,7 @@ library(MASS)
 
 
 # Set seed for reproducibility
-set.seed(20221208)
+set.seed(123)
 
 # Simulate data
 sim.XY <- function(n, p, beta) {
@@ -30,15 +30,15 @@ sim.XY <- function(n, p, beta) {
   return(list(X = X, Y = Y, beta = beta))
 }
 
-n <- 100
-p <- 20
+n <- 10
+p <- 5
 beta <- exp(rnorm(p))
 data <- sim.XY(n, p, beta)
 
 ## ----s2m-apply----------------------------------------------------------------
 
 b.i <- seq(0, 1, by = 0.05)
-S2M <- VsusP::Sequential2Means(X = data$X, Y = as.vector(data$Y), b.i = b.i, prior = "horseshoe+", n.samples = 5000, burnin = 2000)
+S2M <- VsusP::Sequential2Means(X = data$X, Y = as.vector(data$Y), b.i = b.i, prior = "horseshoe+", n.samples = 300, burnin = 100)
 Beta <- S2M$Beta
 H.b.i <- S2M$H.b.i
 
@@ -53,19 +53,19 @@ cat("Optimal H.b.i: \n", optimal_Hbi, "\n")
 
 
 ## ----s2m-results important Variables------------------------------------------
-H <- 13
+H <- optimal_Hbi
 # Variable selection
 impVariablesGLM <- VsusP::S2MVarSelection(Beta, H)
 impVariablesGLM
 
 ## ----sequential2means-example-------------------------------------------------
-set.seed(20221208)
-n <- 100
-p <- 20
+set.seed(123)
+n <- 10
+p <- 5
 X <- matrix(rnorm(n * p), n, p)
 Y <- X %*% exp(rnorm(p)) + rnorm(n)
 b.i <- seq(0, 1, length.out = 20)
-result <- VsusP::Sequential2Means(X, as.vector(Y), b.i, prior = "horseshoe+", n.samples = 5000, burnin = 2000)
+result <- VsusP::Sequential2Means(X, as.vector(Y), b.i, prior = "horseshoe+", n.samples = 300, burnin = 100)
 
 cat("Beta: \n")
 print(result$Beta[1:5, ])
@@ -79,7 +79,8 @@ print(result$H.b.i)
 VsusP::OptimalHbi(b.i, result$H.b.i)
 
 ## ----s2mvar-selection-example-------------------------------------------------
-H <- 17 
+optimal_Hbi <- min(result$H.b.i)
+H <- optimal_Hbi 
 significantVariables <- VsusP::S2MVarSelection(result$Beta, H)
 cat("Significant Variables: \n")
 print(significantVariables)
@@ -113,9 +114,9 @@ library(VsusP)
 
 set.seed(12345) 
 
-n <- 50
-p <- 300
-r <- 10
+n <- 20
+p <- 5
+r <- 3
 rho <- 0.95
 
 Sigma <- diag(1, p)
@@ -132,13 +133,13 @@ for (b in 0:(num_blocks - 1)) {
 Sigma <- Sigma + diag(0.001, p)  # Ensure positive definiteness
 
 X <- mvrnorm(n, mu = rep(0, p), Sigma = Sigma)
-beta_true <- c(6, rep(3, 4), rep(1, 5), rep(0, p - 10))
+beta_true <- c(6, rep(3, 2), 1, 0)
 Y <- as.vector(X %*% beta_true + rnorm(n))
 
 var_y <- var(Y)
 b_i_range <- seq(0.5 * var_y, 10 * var_y, length.out = 20)  # Check the scale of var(Y)
 
-results <- Sequential2Means(X = X, Y = Y, b.i = b_i_range, prior = "horseshoe+", n.samples = 5000, burnin = 2000)
+results <- Sequential2Means(X = X, Y = Y, b.i = b_i_range, prior = "horseshoe+", n.samples = 300, burnin = 100)
 
 plot(b_i_range, results$H.b.i, type = 'b', xlab = "Tuning parameter b.i", ylab = "Estimated number of signals (H.b.i)",
      main = "Plot of b.i vs H.b.i for Simulation 2")

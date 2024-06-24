@@ -31,7 +31,7 @@ A list S2M which will hold Beta, b.i, and H.b.i.
 
 \item{Beta}{N by p matrix consisting of N posterior samples of p variables}
 \item{b.i}{the user specified vector holding the tuning parameter values}
-\item{H.b.i}{the estimated number of signals of unmeric data type corresponding to each b.i}
+\item{H.b.i}{the estimated number of signals of numeric data type corresponding to each b.i}
 }
 \description{
 Sequential2Means function will take as input X: design matrix, Y : response vector, t: vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm. The function will return a list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
@@ -39,8 +39,8 @@ Sequential2Means function will take as input X: design matrix, Y : response vect
 \examples{
 # -----------------------------------------------------------------
 # Example 1: Gaussian Model and Horseshoe prior
-n <- 100
-p <- 20
+n <- 10
+p <- 5
 X <- matrix(rnorm(n * p), n, p)
 beta <- exp(rnorm(p))
 Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
@@ -48,22 +48,22 @@ b.i <- seq(0, 1, 0.05)
 
 # Sequential2Means with horseshoe+ using gibbs sampling
 # recommended n.samples is 5000 and burning is 2000
-S2M <- Sequential2Means(X, Y, b.i, "horseshoe+", 200, 100)
+S2M <- Sequential2Means(X, Y, b.i, "horseshoe+", 110, 100)
 Beta <- S2M$Beta
 H.b.i <- S2M$H.b.i
 
 # -----------------------------------------------------------------
 # Example 2: Gaussian Model and ridge prior
 
-n <- 100
-p <- 20
+n <- 10
+p <- 5
 X <- matrix(rnorm(n * p), n, p)
 beta <- exp(rnorm(p))
 Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
 b.i <- seq(0, 1, 0.05)
 # Sequential2Means with ridge regression using gibbs sampling
 # recommended n.samples is 5000 and burning is 2000
-S2M <- Sequential2Means(X, Y, b.i, "ridge", 200, 100)
+S2M <- Sequential2Means(X, Y, b.i, "ridge", 110, 100)
 Beta <- S2M$Beta
 H.b.i <- S2M$H.b.i
 

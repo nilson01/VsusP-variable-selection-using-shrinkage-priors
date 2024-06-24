@@ -15,17 +15,17 @@ OptimalHbi(bi, Hbi)
 the optimal value (numeric) of tuning parameter and the associated H value
 }
 \description{
-OptimalHbi function will take b.i and H.b.i as input which comes from the result of TwoMeans function. It will return H: the optimal value of the tuning parameter.
+OptimalHbi function will take b.i and H.b.i as input which comes from the result of TwoMeans function. It will return plot from which you can infer about H: the optimal value of the tuning parameter.
 }
 \examples{
 
-n <- 100
-p <- 20
+n <- 10
+p <- 5
 X <- matrix(rnorm(n * p), n, p)
 beta <- exp(rnorm(p))
 Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
 df <- data.frame(X, Y)
-rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 200, 100)
+rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 110, 100)
 
 Beta <- t(rv.hs$beta)
 lower <- 0

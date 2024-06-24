@@ -10,7 +10,7 @@
 * checking for file ‘VsusP/DESCRIPTION’ ... OK
 * this is package ‘VsusP’ version ‘1.0.0’
 * package encoding: UTF-8
-* checking CRAN incoming feasibility ... [6s/46s] NOTE
+* checking CRAN incoming feasibility ... [5s/37s] NOTE
 Maintainer: ‘Nilson Chapagain <nilson.chapagain@gmail.com>’
 
 New submission
@@ -58,20 +58,16 @@ New submission
 * checking sizes of PDF files under ‘inst/doc’ ... OK
 * checking installed files from ‘inst/doc’ ... OK
 * checking files in ‘vignettes’ ... OK
-* checking examples ... [12s/13s] NOTE
-Examples with CPU (user + system) or elapsed time > 5s
-                      user system elapsed
-Sequential2Means     5.659  0.041   5.745
-Sequential2MeansBeta 5.098  0.040   5.188
+* checking examples ... OK
 * checking for unstated dependencies in ‘tests’ ... OK
-* checking tests ... [33s/33s] OK
-  Running ‘testthat.R’ [32s/33s]
+* checking tests ... [47s/49s] OK
+  Running ‘testthat.R’ [47s/49s]
 * checking for unstated dependencies in vignettes ... OK
 * checking package vignettes ... OK
-* checking re-building of vignette outputs ... [343s/348s] OK
+* checking re-building of vignette outputs ... [19s/22s] OK
 * checking PDF version of manual ... OK
 * checking HTML version of manual ... OK
 * checking for non-standard things in the check directory ... OK
 * checking for detritus in the temp directory ... OK
 * DONE
-Status: 2 NOTEs
+Status: 1 NOTE

@@ -30,15 +30,15 @@ Sequential2MeansBeta function will take as input Beta : N by p matrix consisting
 # -----------------------------------------------------------------
 # Example 1: Gaussian Model and Horseshoe prior
 
-n <- 100
-p <- 20
+n <- 10
+p <- 5
 X <- matrix(rnorm(n * p), n, p)
 beta <- exp(rnorm(p))
 Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
 df <- data.frame(X, Y)
 
 # beta samples for gaussian model using horseshow prior and gibbs sampling
-rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 200, 100)
+rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 110, 100)
 
 Beta <- t(rv.hs$beta)
 lower <- 0
@@ -50,13 +50,13 @@ H.b.i <- S2Mbeta$H.b.i
 # -----------------------------------------------------------------
 # Example 2: normal model and lasso prior
 
-#' n <- 100
-p <- 20
+#' n <- 10
+p <- 5
 X <- matrix(rnorm(n * p), n, p)
 beta <- exp(rnorm(p))
 Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
 df <- data.frame(X, Y)
-rv.hs <- bayesreg::bayesreg(Y ~ ., df, "normal", "lasso", 200, 100)
+rv.hs <- bayesreg::bayesreg(Y ~ ., df, "normal", "lasso", 150, 100)
 
 Beta <- t(rv.hs$beta)
 lower <- 0

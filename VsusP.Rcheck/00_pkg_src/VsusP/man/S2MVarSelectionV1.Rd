@@ -4,12 +4,12 @@
 \alias{S2MVarSelectionV1}
 \title{Variable selection using shrinkage priors :: S2MVarSelectionV1}
 \usage{
-S2MVarSelectionV1(S2M, H = 10)
+S2MVarSelectionV1(S2M, H = 5)
 }
 \arguments{
 \item{S2M}{List obtained from the 2Means.variables function}
 
-\item{H}{Estimated number (numeric) of signals obtained from the optimal.b.i function}
+\item{H}{Estimated number (numeric) of signals, obtained from the optimal.b.i function (default = newValue)}
 }
 \value{
 a vector of indices of important subset of variables for the Gaussian Linear modelof shape H X 1

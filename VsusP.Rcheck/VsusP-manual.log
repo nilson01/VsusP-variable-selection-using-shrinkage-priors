@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2023.2.8)  23 JUN 2024 23:26
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2023.2.8)  24 JUN 2024 03:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -329,8 +329,8 @@ File: l3backend-pdftex.def 2022-02-07 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count289
 \l__pdf_internal_box=\box57
 )
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.aux)
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.aux)
 \openout1 = `Rd2.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
@@ -383,10 +383,10 @@ LaTeX Info: Redefining \ref on input line 8.
 LaTeX Info: Redefining \pageref on input line 8.
 LaTeX Info: Redefining \nameref on input line 8.
 
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.out)
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.out)
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.out)
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.out)
 \@outlinefile=\write4
 \openout4 = `Rd2.out'.
 
@@ -416,8 +416,8 @@ LaTeX Font Info:    Trying to load font information for U+rsfs on input line 29
 (/usr/local/texlive/2022/texmf-dist/tex/latex/jknapltx/ursfs.fd
 File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
 )
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.toc)
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.toc)
 \tf@toc=\write5
 \openout5 = `Rd2.toc'.
 
@@ -465,13 +465,13 @@ File: ts1zi4.fd 2018/01/14 TS1/zi4 (Inconsolata)
 LaTeX Font Info:    Font shape `TS1/zi4/m/n' will be
 (Font)              scaled to size 9.0pt on input line 353.
 
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.ind [7] [8
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.ind [7] [8
 
 
 ])
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.aux)
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.aux)
 Package rerunfilecheck Info: File `Rd2.out' has not changed.
 (rerunfilecheck)             Checksum: 5E81287FB0ABE89C533A2691148D9C21;852.
  ) 
@@ -482,7 +482,7 @@ Here is how much of TeX's memory you used:
  28249 multiletter control sequences out of 15000+600000
  503101 words of font info for 71 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 77i,6n,79p,768b,618s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 77i,6n,79p,659b,620s stack positions out of 10000i,1000n,20000p,200000b,200000s
 {/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/inconsolata/i4-ts1.enc}{/
 usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/base/8r.enc}{/usr/local/texli
 ve/2022/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-0.enc}</usr/local/texlive/
@@ -491,7 +491,7 @@ ve/2022/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-0.enc}</usr/local/texlive/
 022/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2022/texmf-
 dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2022/texmf-dist/fonts
 /type1/urw/times/utmri8a.pfb>
-Output written on Rd2.pdf (8 pages, 92697 bytes).
+Output written on Rd2.pdf (8 pages, 92659 bytes).
 PDF statistics:
  173 PDF objects out of 1000 (max. 8388607)
  150 compressed objects within 2 object streams

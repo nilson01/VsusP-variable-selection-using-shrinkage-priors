@@ -99,8 +99,8 @@ arised Re-gres-sion with the BayesReg
 [6] (/usr/local/texlive/2022/texmf-dist/tex/latex/inconsolata/ts1zi4.fd)
 No file Rd2.ind.
 [7]
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.aux)
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.aux)
 
 Package rerunfilecheck Warning: File `Rd2.out' has changed.
 (rerunfilecheck)                Rerun to get outlines right
@@ -116,7 +116,7 @@ s/type1/urw/times/utmb8a.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/ur
 w/times/utmr8a.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/urw/times/ut
 mr8a.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
 
-Output written on Rd2.pdf (7 pages, 90586 bytes).
+Output written on Rd2.pdf (7 pages, 90546 bytes).
 Transcript written on Rd2.log.
 This is makeindex, version 2.16 [TeX Live 2022] (kpathsea + Thai support).
 Scanning input file Rd2.idx....done (6 entries accepted, 0 rejected).
@@ -188,24 +188,24 @@ For additional information on amsmath, use the `?' option.
 Writing index file Rd2.idx
 (/usr/local/texlive/2022/texmf-dist/tex/latex/psnfss/t1ptm.fd)
 (/usr/local/texlive/2022/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def)
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.aux)
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.aux)
 (/usr/local/texlive/2022/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 ) (/usr/local/texlive/2022/texmf-dist/tex/latex/hyperref/nameref.sty
 (/usr/local/texlive/2022/texmf-dist/tex/latex/refcount/refcount.sty)
 (/usr/local/texlive/2022/texmf-dist/tex/generic/gettitlestring/gettitlestring.s
 ty))
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.out)
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.out)
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.out)
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.out)
 (/usr/local/texlive/2022/texmf-dist/tex/latex/inconsolata/t1zi4.fd)
 (/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsa.fd)
 (/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsb.fd)
 (/usr/local/texlive/2022/texmf-dist/tex/latex/jknapltx/ursfs.fd)
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.toc) [1{/usr/local/texlive/2022/texmf-var/fonts/map/pdftex/updmap
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.toc) [1{/usr/local/texlive/2022/texmf-var/fonts/map/pdftex/updmap
 /pdftex.map}]
 Overfull \hbox (5.70699pt too wide) in paragraph at lines 85--88
 []\T1/ptm/m/n/10 Makalic, E. & Schmidt, D. F. High-Dimensional Bayesian Reg-u-l
@@ -227,10 +227,10 @@ Overfull \hbox (5.70699pt too wide) in paragraph at lines 318--321
 []\T1/ptm/m/n/10 Makalic, E. & Schmidt, D. F. High-Dimensional Bayesian Reg-u-l
 arised Re-gres-sion with the BayesReg
 [6] (/usr/local/texlive/2022/texmf-dist/tex/latex/inconsolata/ts1zi4.fd)
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.ind [7] [8])
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.aux)
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.ind [7] [8])
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.aux)
 
 Package rerunfilecheck Warning: File `Rd2.out' has changed.
 (rerunfilecheck)                Rerun to get outlines right
@@ -246,7 +246,7 @@ s/type1/urw/times/utmb8a.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/ur
 w/times/utmr8a.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/urw/times/ut
 mr8a.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
 
-Output written on Rd2.pdf (8 pages, 92039 bytes).
+Output written on Rd2.pdf (8 pages, 92003 bytes).
 Transcript written on Rd2.log.
 This is makeindex, version 2.16 [TeX Live 2022] (kpathsea + Thai support).
 Scanning input file Rd2.idx....done (6 entries accepted, 0 rejected).
@@ -318,24 +318,24 @@ For additional information on amsmath, use the `?' option.
 Writing index file Rd2.idx
 (/usr/local/texlive/2022/texmf-dist/tex/latex/psnfss/t1ptm.fd)
 (/usr/local/texlive/2022/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def)
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.aux)
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.aux)
 (/usr/local/texlive/2022/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 ) (/usr/local/texlive/2022/texmf-dist/tex/latex/hyperref/nameref.sty
 (/usr/local/texlive/2022/texmf-dist/tex/latex/refcount/refcount.sty)
 (/usr/local/texlive/2022/texmf-dist/tex/generic/gettitlestring/gettitlestring.s
 ty))
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.out)
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.out)
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.out)
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.out)
 (/usr/local/texlive/2022/texmf-dist/tex/latex/inconsolata/t1zi4.fd)
 (/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsa.fd)
 (/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsb.fd)
 (/usr/local/texlive/2022/texmf-dist/tex/latex/jknapltx/ursfs.fd)
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.toc) [1{/usr/local/texlive/2022/texmf-var/fonts/map/pdftex/updmap
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.toc) [1{/usr/local/texlive/2022/texmf-var/fonts/map/pdftex/updmap
 /pdftex.map}]
 Overfull \hbox (5.70699pt too wide) in paragraph at lines 85--88
 []\T1/ptm/m/n/10 Makalic, E. & Schmidt, D. F. High-Dimensional Bayesian Reg-u-l
@@ -357,10 +357,10 @@ Overfull \hbox (5.70699pt too wide) in paragraph at lines 318--321
 []\T1/ptm/m/n/10 Makalic, E. & Schmidt, D. F. High-Dimensional Bayesian Reg-u-l
 arised Re-gres-sion with the BayesReg
 [6] (/usr/local/texlive/2022/texmf-dist/tex/latex/inconsolata/ts1zi4.fd)
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.ind [7] [8])
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp413mZ5/Rd2pdf1358
-a63ff11fa/Rd2.aux) )
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.ind [7] [8])
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/Rtmp49L9cS/Rd2pdf16ee
+77557f575/Rd2.aux) )
 (see the transcript file for additional information){/usr/local/texlive/2022/te
 xmf-dist/fonts/enc/dvips/inconsolata/i4-ts1.enc}{/usr/local/texlive/2022/texmf-
 dist/fonts/enc/dvips/base/8r.enc}{/usr/local/texlive/2022/texmf-dist/fonts/enc/
@@ -370,8 +370,8 @@ s/type1/urw/times/utmb8a.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/ur
 w/times/utmr8a.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/urw/times/ut
 mr8a.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
 
-Output written on Rd2.pdf (8 pages, 92697 bytes).
+Output written on Rd2.pdf (8 pages, 92659 bytes).
 Transcript written on Rd2.log.
 Saving output to ‘VsusP-manual.pdf’ ...
 Done
-You may want to clean up by 'rm -Rf /var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T//Rtmp413mZ5/Rd2pdf1358a63ff11fa'
+You may want to clean up by 'rm -Rf /var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T//Rtmp49L9cS/Rd2pdf16ee77557f575'
