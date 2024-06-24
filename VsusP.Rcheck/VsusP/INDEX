@@ -1,0 +1,12 @@
+OptimalHbi              Variable selection using shrinkage priors ::
+                        OptimalHbi
+S2MVarSelection         Variable selection using shrinkage priors ::
+                        S2MVarSelection
+S2MVarSelectionV1       Variable selection using shrinkage priors ::
+                        S2MVarSelectionV1
+Sequential2Means        Variable selection using shrinkage priors ::
+                        Sequential2Means
+Sequential2MeansBeta    Variable selection using shrinkage prior ::
+                        Sequential2MeansBeta
+numNoiseCoeff           Variable selection using shrinkage priors ::
+                        numNoiseCoeff

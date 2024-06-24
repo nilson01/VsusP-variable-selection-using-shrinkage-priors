@@ -1,0 +1,5 @@
+name	user	system	elapsed
+OptimalHbi	0.851	0.020	0.878	
+S2MVarSelection	0.206	0.008	0.236	
+Sequential2Means	5.659	0.041	5.745	
+Sequential2MeansBeta	5.098	0.040	5.188	
