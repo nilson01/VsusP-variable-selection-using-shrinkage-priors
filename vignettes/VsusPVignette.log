@@ -1,12 +1,12 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2023.2.8)  22 JUN 2024 23:55
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2023.2.8)  24 JUN 2024 02:38
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpDe6I5X/preview-a
-4103d3bbe3d.dir/VsusPVignette.tex
+**/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpCSyqZy/preview-1
+4953527a2240.dir/VsusPVignette.tex
 
-(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpDe6I5X/preview-a4
-103d3bbe3d.dir/VsusPVignette.tex
+(/private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpCSyqZy/preview-14
+953527a2240.dir/VsusPVignette.tex
 LaTeX2e <2021-11-15> patch level 1
 L3 programming layer <2022-02-24> (/usr/local/texlive/2022/texmf-dist/tex/latex
 /base/article.cls
@@ -624,83 +624,84 @@ LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
 [2] [3] [4]
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 280.
-</private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpDe6I5X/preview-a4
-103d3bbe3d.dir/VsusPVignette_files/figure-latex/s2m-results-1.pdf, id=69, 436.6
-3126pt x 285.065pt>
-File: /private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpDe6I5X/previ
-ew-a4103d3bbe3d.dir/VsusPVignette_files/figure-latex/s2m-results-1.pdf Graphic 
-file (type pdf)
-<use /private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpDe6I5X/previe
-w-a4103d3bbe3d.dir/VsusPVignette_files/figure-latex/s2m-results-1.pdf>
+</private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpCSyqZy/preview-14
+953527a2240.dir/VsusPVignette_files/figure-latex/s2m-results-1.pdf, id=69, 436.
+63126pt x 285.065pt>
+File: /private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpCSyqZy/previ
+ew-14953527a2240.dir/VsusPVignette_files/figure-latex/s2m-results-1.pdf Graphic
+ file (type pdf)
+<use /private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpCSyqZy/previe
+w-14953527a2240.dir/VsusPVignette_files/figure-latex/s2m-results-1.pdf>
 Package pdftex.def Info: /private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn
-/T/RtmpDe6I5X/preview-a4103d3bbe3d.dir/VsusPVignette_files/figure-latex/s2m-res
-ults-1.pdf  used on input line 298.
+/T/RtmpCSyqZy/preview-14953527a2240.dir/VsusPVignette_files/figure-latex/s2m-re
+sults-1.pdf  used on input line 298.
 (pdftex.def)             Requested size: 436.63019pt x 285.0643pt.
-[5 </private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpDe6I5X/preview
--a4103d3bbe3d.dir/VsusPVignette_files/figure-latex/s2m-results-1.pdf>] [6]
-Underfull \vbox (badness 5359) detected at line 397
+[5 </private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpCSyqZy/preview
+-14953527a2240.dir/VsusPVignette_files/figure-latex/s2m-results-1.pdf>] [6]
+Underfull \vbox (badness 5359) detected at line 385
  []
 
+[7] [8]
+</private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpCSyqZy/preview-14
+953527a2240.dir/VsusPVignette_files/figure-latex/optimal-hbi-example-1.pdf, id=
+97, 436.63126pt x 285.065pt>
+File: /private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpCSyqZy/previ
+ew-14953527a2240.dir/VsusPVignette_files/figure-latex/optimal-hbi-example-1.pdf
+ Graphic file (type pdf)
+<use /private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpCSyqZy/previe
+w-14953527a2240.dir/VsusPVignette_files/figure-latex/optimal-hbi-example-1.pdf>
 
-Overfull \vbox (7.69861pt too high) detected at line 397
+Package pdftex.def Info: /private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn
+/T/RtmpCSyqZy/preview-14953527a2240.dir/VsusPVignette_files/figure-latex/optima
+l-hbi-example-1.pdf  used on input line 442.
+(pdftex.def)             Requested size: 436.63019pt x 285.0643pt.
+[9 </private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpCSyqZy/preview
+-14953527a2240.dir/VsusPVignette_files/figure-latex/optimal-hbi-example-1.pdf>]
+[10]
+Underfull \vbox (badness 10000) detected at line 555
  []
 
-[7] [8] [9]
-</private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpDe6I5X/preview-a4
-103d3bbe3d.dir/VsusPVignette_files/figure-latex/optimal-hbi-example-1.pdf, id=1
-01, 436.63126pt x 285.065pt>
-File: /private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpDe6I5X/previ
-ew-a4103d3bbe3d.dir/VsusPVignette_files/figure-latex/optimal-hbi-example-1.pdf 
-Graphic file (type pdf)
-<use /private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpDe6I5X/previe
-w-a4103d3bbe3d.dir/VsusPVignette_files/figure-latex/optimal-hbi-example-1.pdf>
-Package pdftex.def Info: /private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn
-/T/RtmpDe6I5X/preview-a4103d3bbe3d.dir/VsusPVignette_files/figure-latex/optimal
--hbi-example-1.pdf  used on input line 454.
-(pdftex.def)             Requested size: 436.63019pt x 285.0643pt.
-[10 </private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpDe6I5X/previe
-w-a4103d3bbe3d.dir/VsusPVignette_files/figure-latex/optimal-hbi-example-1.pdf>]
-[11] [12]
+[11]
 LaTeX Font Info:    Trying to load font information for TS1+lmtt on input line 
-627.
+616.
 (/usr/local/texlive/2022/texmf-dist/tex/latex/lm/ts1lmtt.fd
 File: ts1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-Underfull \vbox (badness 10000) detected at line 630
+Underfull \vbox (badness 10000) detected at line 619
  []
 
-[13]
-</private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpDe6I5X/preview-a4
-103d3bbe3d.dir/VsusPVignette_files/figure-latex/Simulation-1.pdf, id=127, 436.6
-3126pt x 285.065pt>
-File: /private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpDe6I5X/previ
-ew-a4103d3bbe3d.dir/VsusPVignette_files/figure-latex/Simulation-1.pdf Graphic f
-ile (type pdf)
-<use /private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpDe6I5X/previe
-w-a4103d3bbe3d.dir/VsusPVignette_files/figure-latex/Simulation-1.pdf>
+[12]
+</private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpCSyqZy/preview-14
+953527a2240.dir/VsusPVignette_files/figure-latex/Simulation-1.pdf, id=122, 436.
+63126pt x 285.065pt>
+File: /private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpCSyqZy/previ
+ew-14953527a2240.dir/VsusPVignette_files/figure-latex/Simulation-1.pdf Graphic 
+file (type pdf)
+<use /private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpCSyqZy/previe
+w-14953527a2240.dir/VsusPVignette_files/figure-latex/Simulation-1.pdf>
 Package pdftex.def Info: /private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn
-/T/RtmpDe6I5X/preview-a4103d3bbe3d.dir/VsusPVignette_files/figure-latex/Simulat
-ion-1.pdf  used on input line 632.
+/T/RtmpCSyqZy/preview-14953527a2240.dir/VsusPVignette_files/figure-latex/Simula
+tion-1.pdf  used on input line 621.
 (pdftex.def)             Requested size: 436.63019pt x 285.0643pt.
-[14]
-Underfull \vbox (badness 10000) detected at line 663
+[13]
+Underfull \vbox (badness 10000) detected at line 652
  []
 
-[15 </private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpDe6I5X/previe
-w-a4103d3bbe3d.dir/VsusPVignette_files/figure-latex/Simulation-1.pdf>] [16]
+[14 </private/var/folders/76/r06mvw257lbbll_cytzz3_3h0000gn/T/RtmpCSyqZy/previe
+w-14953527a2240.dir/VsusPVignette_files/figure-latex/Simulation-1.pdf>] [15]
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 6
-72.
+60.
 (/usr/local/texlive/2022/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [17] (./VsusPVignette.aux) ) 
+) [16] (./VsusPVignette.aux) ) 
 Here is how much of TeX's memory you used:
- 15377 strings out of 478268
- 249642 string characters out of 5846348
- 585981 words of memory out of 5000000
+ 15382 strings out of 478268
+ 249723 string characters out of 5846348
+ 582980 words of memory out of 5000000
  33177 multiletter control sequences out of 15000+600000
- 530042 words of font info for 136 fonts, out of 8000000 for 9000
+ 530315 words of font info for 139 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 74i,10n,77p,1295b,472s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 74i,10n,77p,1296b,472s stack positions out of 10000i,1000n,20000p,200000b,200000s
 {/usr/local/texlive/2022/texmf-dist/fonts/enc/dvi
 ps/lm/lm-ts1.enc}{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/lm/lm-math
 sy.enc}{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/u
@@ -717,10 +718,10 @@ nts/type1/public/lm/lmsy5.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/p
 ublic/lm/lmtk10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/lm/l
 mtt12.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/lm/lmtti10.pfb
 >
-Output written on VsusPVignette.pdf (17 pages, 261641 bytes).
+Output written on VsusPVignette.pdf (16 pages, 261070 bytes).
 PDF statistics:
- 278 PDF objects out of 1000 (max. 8388607)
- 220 compressed objects within 3 object streams
- 38 named destinations out of 1000 (max. 500000)
+ 282 PDF objects out of 1000 (max. 8388607)
+ 225 compressed objects within 3 object streams
+ 37 named destinations out of 1000 (max. 500000)
  32912 words of extra memory for PDF output out of 35830 (max. 10000000)
 
