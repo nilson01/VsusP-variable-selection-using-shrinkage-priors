@@ -8,6 +8,11 @@ The maintainer and license are unchanged.
 
 * macOS 14.6 arm64, R 4.5.0: `R CMD check --as-cran` on the final source archive,
   with online incoming and system-clock checks enabled.
+* GitHub Actions: Windows and macOS with R release; Linux with R release,
+  old-release and development. All five jobs passed 578 installed assertions
+  with zero errors, warnings or notes. Linux release also checked PDF/HTML
+  documentation and rebuilt the vignette. Hosted incoming/clock checks were
+  disabled; the local check above exercised them.
 
 ## Check results
 
