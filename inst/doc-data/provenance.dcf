@@ -1,0 +1,7 @@
+Ridge: six observations; two predictors; 1000 independent draws per chain; two chains; seed 8
+Horseshoe: five observations; one predictor; 1000 burn-in and 3000 retained draws per chain; four chains; seed 811
+Spike-slab: same five observations; 1000 burn-in and 3000 retained draws per chain; four chains; seed 810
+Variance-prior: IG(1.5,1.5); native scale priors documented in FitGaussian
+Target-tolerance: max(0.01,6*MCSE); MCSE from 100-draw batches
+Trace-display: first 300 retained draws per chain; autocorrelation uses all 3000
+Evidence-scope: fixed posterior checks and illustrations, not a repeated-dataset study

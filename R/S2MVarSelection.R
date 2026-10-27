@@ -3,82 +3,33 @@
 #------------------ S2MVarSelection algorithm -----------------#
 ################################################################
 
-#'  Variable selection using shrinkage priors :: S2MVarSelection
+#' Select coefficients by posterior median absolute magnitude
 #'
-#' S2MVarSelection function will take S2M: a list obtained from the 2Means.variables function and H: the estimated number of signals obtained from the optimal.H.b.i function. This will give out the important subset of variables for the Gaussian Linear model.
-#'
+#' Return the indices of the H largest column medians of absolute draws.
+#' @param Beta Finite numeric matrix with posterior draws in rows and
+#'   coefficients in columns. Exclude any intercept column.
+#' @param H Integer number of variables to select, from zero to ncol(Beta).
+#' @return Integer vector of selected column indices in decreasing order
+#'   of median absolute magnitude. Equal medians favor larger column indices.
+#'   H = 0 returns integer(0).
+#' @details H is supplied by the caller. This function does not estimate H
+#'   or test statistical significance.
+#' @seealso [S2MVarSelectionV1()], [Sequential2MeansBeta()]
 #' @export
-#' @param Beta matrix consisting of N posterior samples of p variables that is known either to user or from Sequential2Means function
-#' @param H Estimated number of signals obtained from the optimal.b.i function of numeric data type
-#'
-#' @return a vector containing indices of important subset of variables of dimension H X 1.
-#'
-#' @references
-#'
-#' Makalic, E. & Schmidt, D. F.
-#' High-Dimensional Bayesian Regularised Regression with the BayesReg Package
-#' arXiv:1611.06649, 2016
-#'
-#' Li, H., & Pati, D.
-#' Variable selection using shrinkage priors
-#' Computational Statistics & Data Analysis, 107, 107-119.
-#'
+#' @references Li, H. and Pati, D. (2017). Variable selection using shrinkage
+#'   priors. Computational Statistics & Data Analysis, 107, 107--119.
+#'   \doi{10.1016/j.csda.2016.10.008}.
 #' @examples
-#'
-#' n <- 10
-#' p <- 5
-#' X <- matrix(rnorm(n * p), n, p)
-#' beta <- exp(rnorm(p))
-#' Y <- as.vector(X %*% beta + rnorm(n, 0, 1))
-#' df <- data.frame(X, Y)
-#' # Fit a model using gaussian horseshoe+ for 200 samples
-#' # # recommended n.samples is 5000 and burning is 2000
-#' rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 110, 100)
-#'
-#' Beta <- rv.hs$beta
-#' H <- 3
-#' impVariablesGLM <- S2MVarSelection(Beta, H)
-#' impVariablesGLM
-#'
+#' Beta <- rbind(c(.01, .02, .03, .3, .31, 10, 11),
+#'               c(-.01, -.02, -.03, -.3, -.31, -10, -11))
+#' set.seed(1)
+#' result <- Sequential2MeansBeta(Beta, .1, .5, 2)
+#' S2MVarSelection(Beta, result$H.b.i[2])
+#' S2MVarSelection(Beta, 0)
 S2MVarSelection <- function(Beta, H = 5) {
-  # Check for NULL or NaN values in H
-  if (is.null(H)) {
-    stop(paste("H must not be NULL. "))
-  }
-
-  # Check for numeric data type of H
-  if (!is.numeric(H)) {
-    stop(paste("H must be passed as numeric data type. "))
-  }
-
-  # Check for NULL or NaN values in Beta
-  if (is.null(Beta) || any(is.na(Beta))) {
-    stop(paste("Beta must not be NULL or have NaN values. \n Please check Sequential2Means funnction if Beta is not available."))
-  }
-
-  # Check for matrix data type of Beta
-  if (!is.matrix(Beta)) {
-    stop(paste("Beta must be passed as matrix data type. "))
-  }
-
-  # Check for H must be less than total covariates.
-  if (H > ncol(Beta)) {
-    stop(paste("H must be less than total covariates. "))
-  }
-
-  # number of covariates
-  p <- ncol(Beta)
-
-  # the medians of the absolute values of the posterior samples of each Beta vector
-  abs.post.median <- seq(0, length = p)
-  for (i in 1:p) {
-    abs.post.median[i] <- stats::median(abs(Beta[, i]))
-  }
-
-  # the indices of selected variables
-  impVariablesGLM <- order(abs.post.median)[p:(p - H + 1)]
-
-  return(impVariablesGLM)
+  checkNumericMatrix(Beta, "Beta")
+  checkSelectionCount(H, ncol(Beta))
+  rankSelection(apply(abs(Beta), 2L, stats::median), H)
 }
 
 
@@ -88,122 +39,67 @@ S2MVarSelection <- function(Beta, H = 5) {
 ################################################################
 
 
-#'  Variable selection using shrinkage priors :: OptimalHbi
+#' Plot the sequential two-means tuning path
 #'
-#' OptimalHbi function will take b.i and H.b.i as input which comes from the result of TwoMeans function. It will return plot from which you can infer about H: the optimal value of the tuning parameter.
-#'
+#' Display the estimated signal count at each threshold to support a choice
+#' of tuning parameter. The function does not choose a threshold or H.
+#' @param bi Nonempty vector of finite, nonnegative thresholds.
+#' @param Hbi Nonnegative integer counts, with the same length as bi.
+#' @return Invisible NULL. A plot is drawn on the current graphics device.
+#' @seealso [Sequential2MeansBeta()]
 #' @export
-#' @param bi a vector holding the values of the tuning parameter specified by the user
-#' @param Hbi The estimated number of signals corresponding to each b.i of numeric data type
-#'
-#' @return the optimal value (numeric) of tuning parameter and the associated H value
-#'
-#' @references
-#'
-#' Makalic, E. & Schmidt, D. F.
-#' High-Dimensional Bayesian Regularised Regression with the BayesReg Package
-#' arXiv:1611.06649, 2016
-#'
-#' Li, H., & Pati, D.
-#' Variable selection using shrinkage priors
-#' Computational Statistics & Data Analysis, 107, 107-119.
-#'
+#' @references Li, H. and Pati, D. (2017). Variable selection using shrinkage
+#'   priors. Computational Statistics & Data Analysis, 107, 107--119.
+#'   \doi{10.1016/j.csda.2016.10.008}.
 #' @examples
-#'
-#' n <- 10
-#' p <- 5
-#' X <- matrix(rnorm(n * p), n, p)
-#' beta <- exp(rnorm(p))
-#' Y <- as.vector(X %*% beta + rnorm(n, 0, 1))
-#' df <- data.frame(X, Y)
-#' rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 110, 100)
-#'
-#' Beta <- t(rv.hs$beta)
-#' lower <- 0
-#' upper <- 1
-#' l <- 5
-#' S2Mbeta <- Sequential2MeansBeta(Beta, lower, upper, l)
-#'
-#' bi <- S2Mbeta$b.i
-#' Hbi <- S2Mbeta$H.b.i
-#' OptimalHbi(bi, Hbi)
-#'
+#' Beta <- rbind(c(.01, .02, .03, .3, .31, 10, 11),
+#'               c(-.01, -.02, -.03, -.3, -.31, -10, -11))
+#' set.seed(1)
+#' result <- Sequential2MeansBeta(Beta, .1, .5, 2)
+#' OptimalHbi(result$b.i, result$H.b.i)
 OptimalHbi <- function(bi, Hbi) {
-  # Check for NULL or NaN values in b.i
-  if (is.null(bi) || any(is.na(bi))) {
-    stop(paste("b.i must not be NULL or have NaN values."))
-  }
-
-  # Check for vector data type of b.i
-  if (!is.vector(bi)) {
-    stop(paste("b.i must be passed as vector data type."))
-  }
-
-  # Check for the length of b.i and H.b.i
-  if (length(bi) != length(Hbi)) {
-    stop(paste("b.i and H.b.i must have same length."))
-  }
-
-  # plotting tuning parameters Vs number of important variables counts
-  plot(bi, Hbi, type = 'b', xlab = "Tuning parameter b.i", ylab = "Estimated number of signals (H.b.i)",
-       main = "Plot of b.i vs H.b.i")
+  checkNumericVector(bi, "bi", nonnegative = TRUE)
+  checkNumericVector(Hbi, "Hbi", nonnegative = TRUE)
+  if (any(Hbi %% 1 != 0)) stop("Hbi must contain integer counts.")
+  if (length(bi) != length(Hbi)) stop("bi and Hbi must have the same length.")
+  graphics::plot(bi, Hbi, type = "b", xlab = "Tuning parameter b",
+       ylab = "Estimated number of signals", main = "S2M tuning path")
+  invisible(NULL)
 }
 
 ################################################################
 #---------------- S2MVarSelectionV1 algorithm -----------------#
 ################################################################
 
-#'  Variable selection using shrinkage priors :: S2MVarSelectionV1
+#' Select coefficients from an S2M summary
 #'
-#' S2MVarSelectionV1 function will take S2M: a list obtained from the 2Means.variables function and H: the estimated number of signals obtained from the optimal.b.i function. This will give out the important subset of variables for the Gaussian Linear model.
-#'
+#' Select the H largest posterior median absolute coefficients from a
+#' summary returned by either S2M fitting function.
+#' @param S2M List containing p (a positive integer) and abs.post.median
+#'   (a finite, nonnegative numeric vector of length p). Legacy lists with
+#'   these two fields are also accepted.
+#' @param H Integer number of variables to select, from zero to S2M$p.
+#' @return Integer vector of selected column indices, ordered by decreasing
+#'   median absolute magnitude. Equal medians favor larger column indices.
+#'   H = 0 returns integer(0).
+#' @seealso [S2MVarSelection()], [Sequential2MeansBeta()]
 #' @export
-#' @param S2M List obtained from the 2Means.variables function
-#' @param H Estimated number (numeric) of signals, obtained from the optimal.b.i function (default = newValue)
-#'
-#' @return a vector of indices of important subset of variables for the Gaussian Linear modelof shape H X 1
-#'
+#' @references Li, H. and Pati, D. (2017). Variable selection using shrinkage
+#'   priors. Computational Statistics & Data Analysis, 107, 107--119.
+#'   \doi{10.1016/j.csda.2016.10.008}.
+#' @examples
+#' Beta <- rbind(c(.01, .02, .03, .3, .31, 10, 11),
+#'               c(-.01, -.02, -.03, -.3, -.31, -10, -11))
+#' set.seed(1)
+#' result <- Sequential2MeansBeta(Beta, .1, .5, 2)
+#' S2MVarSelectionV1(result, result$H.b.i[2])
 S2MVarSelectionV1 <- function(S2M, H = 5) {
-  # number of covariates
-  p <- S2M$p
-
-  # the medians of the absolute values of the posterior samples of each Beta vector
-  abs.post.median <- S2M$abs.post.median
-
-  # Check for NULL or NaN values in H
-  if (is.null(H)) {
-    stop(paste("H must not be NULL. "))
+  if (!is.list(S2M)) stop("S2M must be a list with p and abs.post.median.")
+  checkIntegerScalar(S2M$p, "S2M$p", lower = 1)
+  checkNumericVector(S2M$abs.post.median, "S2M$abs.post.median", nonnegative = TRUE)
+  if (length(S2M$abs.post.median) != S2M$p) {
+    stop("S2M$abs.post.median must have length S2M$p.")
   }
-
-  # Check for numeric data type of H
-  if (!is.numeric(H)) {
-    stop(paste("H must be passed as numeric data type. "))
-  }
-
-  # Check for NULL or NaN values in abs.post.median
-  if (is.null(abs.post.median) || any(is.na(abs.post.median))) {
-    stop(paste("abs.post.median must not be NULL or have NaN values. "))
-  }
-
-  # Check for non negative values in abs.post.median
-  if (any(abs.post.median < 0)) {
-    stop(paste("abs.post.median must not be less than zero. "))
-  }
-
-  # Check for matrix data type of abs.post.median
-  if (!is.vector(abs.post.median)) {
-    stop(paste("abs.post.median must be passed as vector data type. "))
-  }
-
-  # Check for H must be less than total covariates.
-  if (H > p) {
-    stop(paste("H must be less than total covariates. "))
-  }
-
-
-  # the indices of selected variables
-  impVariablesGLM <- order(abs.post.median)[p:(p - H + 1)]
-
-  return(impVariablesGLM)
+  checkSelectionCount(H, S2M$p)
+  rankSelection(S2M$abs.post.median, H)
 }
-

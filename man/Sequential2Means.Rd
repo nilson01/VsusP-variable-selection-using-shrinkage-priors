@@ -2,7 +2,7 @@
 % Please edit documentation in R/Sequential2Means.R
 \name{Sequential2Means}
 \alias{Sequential2Means}
-\title{Variable selection using shrinkage priors :: Sequential2Means}
+\title{Fit Gaussian shrinkage regression and apply sequential two-means}
 \usage{
 Sequential2Means(
   X,
@@ -10,70 +10,68 @@ Sequential2Means(
   b.i,
   prior = "horseshoe+",
   n.samples = 5000,
-  burnin = 2000
+  burnin = 2000,
+  clustering = c("kmeans", "exact"),
+  small.set = c("legacy", "refine")
 )
 }
 \arguments{
-\item{X}{Design matrix of dimension n X p, where n = total data points and p = total number of features}
+\item{X}{Finite numeric design matrix with observations in rows and at
+least two predictors in columns.}
 
-\item{Y}{Response vector of dimension n X 1}
+\item{Y}{Finite numeric response vector of length nrow(X).}
 
-\item{b.i}{Vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm of dimension specified by user.}
+\item{b.i}{Nonempty vector of finite, nonnegative center-gap thresholds.}
 
-\item{prior}{Shrinkage prior distribution over the Beta. Available options are ridge regression: prior="rr" or prior="ridge", lasso regression: prior="lasso", horseshoe regression: prior="hs" or prior="horseshoe", and horseshoe+ regression : prior="hs+" or prior="horseshoe+" ( String data type)}
+\item{prior}{Shrinkage prior: "ridge" ("rr"), "lasso", "horseshoe"
+("hs"), or "horseshoe+" ("hs+").}
 
-\item{n.samples}{Number of posterior samples to generate of numeric data type}
+\item{n.samples}{Integer number of requested posterior draws, at least 100.
+bayesreg may round this count up when using parallel workers.}
 
-\item{burnin}{Number of burn-in samples of numeric data type}
+\item{burnin}{Integer number of burn-in iterations, at least 100.}
+
+\item{clustering}{Two-means backend. "kmeans" retains the existing randomized
+implementation; "exact" scans all distinct adjacent cuts in one dimension.}
+
+\item{small.set}{Recursive stopping convention. "legacy" retains a candidate
+with at most two elements. "refine" splits a distinct pair and reapplies
+the center-gap rule, stopping at a singleton or constant candidate.}
 }
 \value{
-A list S2M which will hold Beta, b.i, and H.b.i.
-
-\item{Beta}{N by p matrix consisting of N posterior samples of p variables}
-\item{b.i}{the user specified vector holding the tuning parameter values}
-\item{H.b.i}{the estimated number of signals of numeric data type corresponding to each b.i}
+A list with Beta (returned draws in rows, predictors in columns),
+p (number of predictors), b.i (thresholds), H.b.i (modal signal counts),
+and abs.post.median (column medians of absolute coefficient draws).
 }
 \description{
-Sequential2Means function will take as input X: design matrix, Y : response vector, t: vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm. The function will return a list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
+Fit a Gaussian linear model with bayesreg, then apply sequential two-means
+(S2M) to its coefficient draws. The intercept is excluded from selection.
+}
+\details{
+All returned draws are used. Thresholds are on the coefficient
+scale, so predictor scaling affects their interpretation. See
+\code{\link[=Sequential2MeansBeta]{Sequential2MeansBeta()}} for stopping conventions and limitations.
+A short chain demonstrates the call; assess convergence and effective
+sample size before using posterior summaries for inference.
 }
 \examples{
-# -----------------------------------------------------------------
-# Example 1: Gaussian Model and Horseshoe prior
-n <- 10
-p <- 5
-X <- matrix(rnorm(n * p), n, p)
-beta <- exp(rnorm(p))
-Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
-b.i <- seq(0, 1, 0.05)
-
-# Sequential2Means with horseshoe+ using gibbs sampling
-# recommended n.samples is 5000 and burning is 2000
-S2M <- Sequential2Means(X, Y, b.i, "horseshoe+", 110, 100)
-Beta <- S2M$Beta
-H.b.i <- S2M$H.b.i
-
-# -----------------------------------------------------------------
-# Example 2: Gaussian Model and ridge prior
-
-n <- 10
-p <- 5
-X <- matrix(rnorm(n * p), n, p)
-beta <- exp(rnorm(p))
-Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
-b.i <- seq(0, 1, 0.05)
-# Sequential2Means with ridge regression using gibbs sampling
-# recommended n.samples is 5000 and burning is 2000
-S2M <- Sequential2Means(X, Y, b.i, "ridge", 110, 100)
-Beta <- S2M$Beta
-H.b.i <- S2M$H.b.i
-
+set.seed(12)
+X <- matrix(rnorm(120), 40, 3)
+Y <- 3 * X[, 1] + rnorm(40)
+result <- Sequential2Means(X, Y, c(.1, .5), prior = "ridge",
+                           n.samples = 100, burnin = 100)
+dim(result$Beta)
+S2MVarSelectionV1(result, result$H.b.i[1])
 }
 \references{
-Makalic, E. & Schmidt, D. F.
-High-Dimensional Bayesian Regularised Regression with the BayesReg Package
-arXiv:1611.06649, 2016
+Li, H. and Pati, D. (2017). Variable selection using shrinkage
+priors. Computational Statistics & Data Analysis, 107, 107--119.
+\doi{10.1016/j.csda.2016.10.008}.
 
-Li, H., & Pati, D.
-Variable selection using shrinkage priors
-Computational Statistics & Data Analysis, 107, 107-119.
+Wang, H. and Song, M. (2011). Ckmeans.1d.dp: Optimal k-means clustering
+in one dimension by dynamic programming. The R Journal, 3(2), 29--33.
+\doi{10.32614/RJ-2011-015}.
+}
+\seealso{
+\code{\link[=Sequential2MeansBeta]{Sequential2MeansBeta()}}, \code{\link[=S2MVarSelectionV1]{S2MVarSelectionV1()}}
 }

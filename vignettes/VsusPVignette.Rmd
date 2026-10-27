@@ -1,377 +1,427 @@
 ---
-title: "Variable Selection using Shrinkage Priors (VsusP)"
+title: "Variable selection with VsusP"
 author: "Nilson Chapagain, Debdeep Pati"
-date: "`r Sys.Date()`"
 output:
   rmarkdown::pdf_document:
-    df_print: paged
     number_sections: true
-    toc: true
-    toc_depth: 3
+header-includes:
+  - \usepackage{float}
+  - \usepackage[section]{placeins}
 vignette: >
-  %\VignetteIndexEntry{Variable Selection using Shrinkage Priors (VsusP)}
+  %\VignetteIndexEntry{Variable selection with VsusP}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-header-includes:
-  - \usepackage{fvextra}
-  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
-  - \usepackage{titlesec}
-  - \titlespacing*{\section}{0pt}{1em}{0.5em}
-  - \titlespacing*{\subsection}{0pt}{0.75em}{0.5em}
-  - \titlespacing*{\subsubsection}{0pt}{0.5em}{0.25em}
-  - \usepackage{anyfontsize}
-  - \usepackage{lmodern}
-  - \renewcommand{\normalsize}{\fontsize{12}{14}\selectfont}
-  - \renewcommand{\large}{\fontsize{14}{16}\selectfont}
-  - \renewcommand{\Large}{\fontsize{16}{18}\selectfont}
-  - \renewcommand{\LARGE}{\fontsize{18}{20}\selectfont}
-  - \renewcommand{\huge}{\fontsize{20}{24}\selectfont}
-  - \renewcommand{\Huge}{\fontsize{22}{26}\selectfont}
-  - \usepackage{tocloft}
-  - \renewcommand{\cftsecnumwidth}{2.5em}
-  - \renewcommand{\cftsubsecnumwidth}{3em}
-  - \renewcommand{\cftsubsubsecnumwidth}{3.5em}
-  - \renewcommand{\cftsecfont}{\normalfont\bfseries}
-  - \renewcommand{\cftsubsecfont}{\normalfont}
-  - \renewcommand{\cftsubsubsecfont}{\normalfont}
-  - \setcounter{secnumdepth}{3}
-  - \setcounter{tocdepth}{3}
-  - \renewcommand{\thesection}{\arabic{section}}
-  - \renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
-  - \renewcommand{\thesubsubsection}{\thesubsection.\arabic{subsubsection}}
-  - \setcounter{section}{0}
-  - \usepackage{setspace}
-  - \doublespacing
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
-```
-
-\newpage
-
-# Introduction
-
-**VsusP** provides robust methods for variable selection within Gaussian linear models, utilizing shrinkage priors to enhance the analysis of high-dimensional data. The main approach involves a two-step process where the number of significant variables is first determined by clustering coefficients, followed by selection based on posterior medians.
-
-## Installation
-You can install the most recent version of 'VsusP' package from [GitHub](https://github.com/nilson01/VsusP-variable-selection-using-shrinkage-priors) using the following commands:
-
-```{r, eval = FALSE}
-# Plain installation
-devtools::install_github("nilson01/VsusP")
-
-# For installation with vignette
-devtools::install_github("nilson01/VsusP", build_vignettes = TRUE)
-
-# load the library
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(VsusP)
-
 ```
 
-
-## Methodology
-
-
-### Theoretical Background
-
-Variable selection in high-dimensional models has garnered significant interest, especially for its applications in complex biological and environmental research. Traditional methods using spike-and-slab priors face computational challenges in high dimensions, motivating the use of continuous shrinkage priors. These priors facilitate computation and interpretability by allowing for a mixture of global and local shrinkage effects, thus handling high-dimensional sparse vectors more efficiently.
-
-In the context of Gaussian linear models:
-\[ Y = X\beta + \epsilon, \quad \epsilon \sim N(0, \sigma^2 I_n) \]
-
-where \( Y \) is the response vector, \( X \) is the covariate matrix, and \( \beta \) is the coefficient vector. The continuous shrinkage priors, such as the horseshoe prior, have shown promise in variable selection by providing a balance between sparsity and signal retention.
-
-### Main Results
-
-The `VsusP` package implements a novel post-MCMC variable selection method using shrinkage priors. This method consists primarily of two approaches: the 2-Means (2-M) and Sequential 2-Means (S2M) variable selection. Both methods are designed to address high-dimensional challenges by efficiently identifying significant variables without the need for extensive tuning parameters.
-
-### Sequential 2-Means (S2M) Variable Selection
-
-The S2M method is a refined approach that aims to minimize masking errors, which often occur with heterogeneous signal strengths among variables. It involves iterative clustering of absolute coefficients, adjusting clusters based on a dynamic threshold parameter `b`, which is crucial for distinguishing between signal and noise.
-
-#### Algorithm
-
-1. Cluster the absolute values of coefficients using the k-means algorithm.
-2. Continuously adjust the clustering by recalculating the mean of each cluster and adjusting the membership based on the threshold `b`.
-3. Determine the set of significant variables based on the stability of cluster memberships across iterations.
-
-
-**Choosing Tuning Parameter \( b \)**:
-The tuning parameter \( b \) is chosen to balance the masking and swamping errors. A visual inspection of the plot of \( b_i \) vs. the number of significant variables helps in identifying the optimal value of \( b \).
-
-Note: The parameter values presented in the examples are for demo purpose only and choose the parameters as per the problem you are dealing with.
-
-## Example
-
-This example demonstrates how to use `VsusP` to perform variable selection through simulated data:
-
-```{r example-setup}
-# Assuming MASS is installed, if not uncomment the next line
-if (!requireNamespace("MASS", quietly = TRUE)) {
-    install.packages("MASS")
-}
-library(MASS)
-
-
-# Set seed for reproducibility
-set.seed(123)
-
-# Simulate data
-sim.XY <- function(n, p, beta) {
-  X <- matrix(rnorm(n * p), n, p)
-  Y <- X %*% beta + rnorm(n)
-  return(list(X = X, Y = Y, beta = beta))
-}
-
-n <- 10
-p <- 5
-beta <- exp(rnorm(p))
-data <- sim.XY(n, p, beta)
-```
-
-### Applying Sequential2Means
-
-`Sequential2Means` is used to cluster the coefficients and estimate the number of significant variables:
-
-```{r s2m-apply}
-
-b.i <- seq(0, 1, by = 0.05)
-S2M <- VsusP::Sequential2Means(X = data$X, Y = as.vector(data$Y), b.i = b.i, prior = "horseshoe+", n.samples = 300, burnin = 100)
-Beta <- S2M$Beta
-H.b.i <- S2M$H.b.i
-```
-
-### Identifying Significant Variables
-
-Using the `OptimalHbi` function, the optimal number of significant variables is determined:
-
-```{r s2m-results}
-VsusP::OptimalHbi(bi = b.i, Hbi = H.b.i)
-
-optimal_b_i <- b.i[which.min(S2M$H.b.i)]
-optimal_Hbi <- min(S2M$H.b.i)
-
-cat("Optimal b.i: \n", optimal_b_i, "\n")
-cat("Optimal H.b.i: \n", optimal_Hbi, "\n")
-
-```
-
-```{r s2m-results important Variables}
-H <- optimal_Hbi
-# Variable selection
-impVariablesGLM <- VsusP::S2MVarSelection(Beta, H)
-impVariablesGLM
-```
-
-
-
-
-# Detailed Function Descriptions
-
-## Sequential2Means
-
-**Purpose:** Implements a sequential two-means clustering to segregate significant variables from noise, crucial for high-dimensional data settings.
-This function identifies the significant variables from the results obtained from the Sequential2Means function.
-It uses the posterior distribution of coefficients to determine which variables play a crucial role in explaining
-the response variable in a Gaussian linear model setting. The selection is based on the highest posterior median
-of absolute coefficients, ensuring that the most consistently relevant variables are chosen, minimizing both type I
-and type II errors.
-
-**Parameters:**
-- **X**: Design matrix (n x p) where n is the number of observations and p is the number of variables.
-- **Y**: Response vector (n x 1).
-- **b.i**: Vector of tuning parameters.
-- **prior**: Type of shrinkage prior (e.g., "ridge", "lasso", "horseshoe").
-- **n.samples**: Number of MCMC samples.
-- **burnin**: Number of burn-in samples.
-
-**Output:** Returns a list containing:
-- **Beta**: Coefficient matrix across all iterations.
-- **b.i**: Tested values of tuning parameters.
-- **H.b.i**: Estimated number of significant variables for each tuning parameter value.
-
-**Process:** Iteratively refines variable classification into signal or noise based on the Bayesian posterior distributions.
-
-```{r sequential2means-example}
-set.seed(123)
-n <- 10
-p <- 5
-X <- matrix(rnorm(n * p), n, p)
-Y <- X %*% exp(rnorm(p)) + rnorm(n)
-b.i <- seq(0, 1, length.out = 20)
-result <- VsusP::Sequential2Means(X, as.vector(Y), b.i, prior = "horseshoe+", n.samples = 300, burnin = 100)
-
-cat("Beta: \n")
-print(result$Beta[1:5, ])
-cat("\n\n")
-
-cat("H.b.i: \n")
-print(result$H.b.i)
-
-```
-
-
-## OptimalHbi
-
-**Purpose:** Determines the optimal number of significant variables by assessing stability across tuning parameters, ensuring balanced model complexity.
-
-This function determines the optimal number of significant variables ('H') by assessing the stability across
-different values of tuning parameters. It is pivotal for ensuring the model neither overfits nor underfits, providing
-a robust means to handle model complexity and accuracy efficiently.
-
-The optimal value of the tuning parameter 'H', representing the best compromise between model complexity
-and fitting accuracy. This function plots 'bi' vs 'Hbi' and the user should select 'H' at the point of sharpest change
-in the plot, indicating the most stable variable selection.
-
-
-**Parameters:**
-- **bi**: Vector of tuning parameters.
-- **Hbi**: Estimated number of signals for each tuning parameter.
-
-**Output:** Plot to select optimal 'H' value, indicating the most appropriate number of significant variables to prevent overfitting or underfitting.
-
-**Process:** Select the 'H' at the point of the sharpest change in the plot of 'bi' vs 'Hbi', indicative of stable variable selection.
-
-```{r optimal-hbi-example}
-VsusP::OptimalHbi(b.i, result$H.b.i)
-```
-
-## S2MVarSelection
-
-**Purpose:** Extracts a subset of significant variables based on the highest posterior medians of absolute coefficients from the Sequential2Means output.
-An alternative to S2MVarSelection that provides a more direct approach to variable selection, using refined criteria for determining significance directly from the clustering outputs of Sequential2Means.
-It leverages detailed clustering information, specifically the median absolute values of the coefficients, to prioritize variables, providing a method that might be more responsive to subtle variations in data structure and signal intensity.
-
-**Parameters:**
-- **Beta**: Matrix of posterior samples.
-- **H**: Number of significant variables estimated.
-
-**Output:** Indices of significant variables, directly identifying key predictors.
-
-**Process:** Selects variables whose coefficients show consistent importance across samples, minimizing error rates.
-
-```{r s2mvar-selection-example}
-optimal_Hbi <- min(result$H.b.i)
-H <- optimal_Hbi 
-significantVariables <- VsusP::S2MVarSelection(result$Beta, H)
-cat("Significant Variables: \n")
-print(significantVariables)
-
-```
-
-## Sequential2MeansBeta
-
-**Purpose:** Extends the functionality of `Sequential2Means` by allowing the specification of a range for the tuning parameters, enabling more flexible model testing.
-This function extends Sequential2Means by allowing for precise control over the range and density of tuning parameters to be tested, accommodating advanced scenarios where the distribution of signals is hypothesized to be non-uniform.
-Similar to Sequential2Means, it returns a list with p (number of variables), b.i (tested tuning parameters), and H.b.i (estimated significant variables for each tuning parameter), facilitating detailed analysis of variable significance across a customized range of model complexities.
-
-**Parameters:**
-- **Beta**: Matrix of N by p dimensions consisting of N posterior samples of p variables.
-- **lower**: Lower bound of the tuning parameter values.
-- **upper**: Upper bound of the tuning parameter values.
-- **l**: Number of points within the tuning parameter range.
-
-**Output:** Similar to `Sequential2Means`, it returns a list that includes:
-- **p**: Number of variables.
-- **b.i**: Vector of tested tuning parameters.
-- **H.b.i**: Estimated number of significant variables for each tuning parameter.
-
-**Process:** Evaluates the significance of coefficients across a user-defined range of tuning parameters, enhancing the ability to discern the underlying signal structure.
-
-```{r sequential2meansbeta-example}
-Beta <- result$Beta
-lower <- 0
-upper <- 1
-l <- 20
-
-S2MBeta = VsusP::Sequential2MeansBeta(Beta, lower, upper, l)
-
-cat("p : \n")
-print(S2MBeta$p)
-cat("\n\n")
-
-
-cat("bi : \n")
-print(S2MBeta$b.i)
-cat("\n\n")
-
-
-cat("Hbi : \n")
-print(S2MBeta$H.b.i)
-```
-
-# Simulation example
-
-
-```{r Simulation}
-
-library(MASS)
+# Model and selection rule
+
+For a Gaussian linear model, let $Y$ be the response vector, $X$ the design
+matrix and $\beta$ the coefficient vector:
+\[
+Y=X\beta+\epsilon,\qquad \epsilon\sim N(0,\sigma^2 I_n).
+\]
+Here $n$ is the number of observations and $\sigma^2$ is the residual variance.
+Shrinkage priors draw coefficients toward zero without setting them exactly to
+zero. VsusP uses the sequential two-means (S2M) method of Li and Pati (2017,
+Section 2.2.1) to select a subset from these posterior draws.
+
+For each draw, S2M clusters absolute coefficients into two groups and saves the
+lower-mean group as the noise candidate set $D$. While the center gap exceeds
+$b$, it saves the current lower-mean group and splits that group again. When
+the gap is at most $b$, it retains the saved $D$, giving signal count
+$H=p-|D|$, where $p$ is the number of coefficients. VsusP also stops when the
+candidate has at most two elements or identical magnitudes. It uses the modal
+count across draws, then selects the $H$ largest posterior median absolute
+coefficients. Equal-frequency modes favor the smaller count; equal medians
+favor larger column indices.
+
+# Installation
+
+```{r install, eval=FALSE}
+install.packages("VsusP")
 library(VsusP)
-
-set.seed(12345) 
-
-n <- 20
-p <- 5
-r <- 3
-rho <- 0.95
-
-Sigma <- diag(1, p)
-block_size <- 5
-num_blocks <- p / block_size
-
-for (b in 0:(num_blocks - 1)) {
-  block_start <- b * block_size + 1
-  block_end <- min(p, block_start + block_size - 1)
-  Sigma[block_start:block_end, block_start:block_end] <- rho
-  diag(Sigma[block_start:block_end, block_start:block_end]) <- 1
-}
-
-Sigma <- Sigma + diag(0.001, p)  # Ensure positive definiteness
-
-X <- mvrnorm(n, mu = rep(0, p), Sigma = Sigma)
-beta_true <- c(6, rep(3, 2), 1, 0)
-Y <- as.vector(X %*% beta_true + rnorm(n))
-
-var_y <- var(Y)
-b_i_range <- seq(0.5 * var_y, 10 * var_y, length.out = 20)  # Check the scale of var(Y)
-
-results <- Sequential2Means(X = X, Y = Y, b.i = b_i_range, prior = "horseshoe+", n.samples = 300, burnin = 100)
-
-plot(b_i_range, results$H.b.i, type = 'b', xlab = "Tuning parameter b.i", ylab = "Estimated number of signals (H.b.i)",
-     main = "Plot of b.i vs H.b.i for Simulation 2")
-
-optimal_b_i <- b_i_range[which.min(results$H.b.i)]
-optimal_Hbi <- min(results$H.b.i)
-
-cat("Optimal b.i:", optimal_b_i, "\n")
-cat("Optimal H.b.i:", optimal_Hbi, "\n")
-
-H <- optimal_Hbi
-# Variable selection
-Beta <- results$Beta
-
-impVariablesGLM <- S2MVarSelection(Beta, H)
-impVariablesGLM
-
-
 ```
 
-\newpage
+For the development version:
+
+```{r github-install, eval=FALSE}
+# Install devtools first if it is not available.
+devtools::install_github("nilson01/VsusP-variable-selection-using-shrinkage-priors")
+```
+
+# Work from posterior draws
+
+The rows of `Beta` are posterior draws; columns correspond to coefficients.
+Exclude any intercept column. These fixed draws show the selection steps
+without fitting a regression model.
+
+```{r draws}
+Beta <- rbind(c(.01, .02, .03, .3, .31, 10, 11),
+              c(-.01, -.02, -.03, -.3, -.31, -10, -11))
+colnames(Beta) <- paste0("x", seq_len(ncol(Beta)))
+set.seed(1)
+result <- Sequential2MeansBeta(Beta, lower=.1, upper=.5, l=2)
+data.frame(b=result$b.i, H=result$H.b.i)
+```
+
+`OptimalHbi()` displays this path. It does not select a threshold or compute an
+optimal value. In this illustration, we use $b=0.5$ and its corresponding count.
+
+```{r tuning-path, fig.width=5, fig.height=3, fig.cap="S2M signal counts for the fixed coefficient draws."}
+OptimalHbi(result$b.i, result$H.b.i)
+```
+
+```{r selection}
+H <- result$H.b.i[2]
+indices <- S2MVarSelection(Beta, H)
+colnames(Beta)[indices]
+S2MVarSelectionV1(result, H)
+```
+
+Both selection functions return column indices. `S2MVarSelectionV1()` uses the
+stored medians rather than recomputing them. `H=0` returns `integer(0)`; this is
+an explicit selection count, not an empty-model decision made by S2M.
+
+# Fit a Gaussian shrinkage model
+
+`Sequential2Means()` fits a Gaussian regression through `bayesreg` and applies
+S2M to all returned coefficient draws. Its priors are `ridge` (`rr`), `lasso`,
+`horseshoe` (`hs`) and `horseshoe+` (`hs+`). The intercept is excluded.
+
+```{r fit, eval=FALSE}
+set.seed(12)
+X <- matrix(rnorm(120),40,3)
+colnames(X) <- c("x1","x2","x3")
+y <- 3*X[,1] + rnorm(40)
+fit <- Sequential2Means(X,y,b.i=c(.1,.5),prior="ridge",
+                        n.samples=100,burnin=100)
+dim(fit$Beta)
+S2MVarSelectionV1(fit,fit$H.b.i[1])
+```
+
+This short chain demonstrates the call. Assess convergence and effective sample
+size and use adequate sampling before drawing scientific conclusions. For draws
+from a separate `bayesreg` fit, transpose its coefficient matrix:
+
+```{r separate-fit, eval=FALSE}
+posterior <- bayesreg::bayesreg(y ~ .,data.frame(X,y),model="gaussian",
+                               prior="horseshoe",n.samples=5000,burnin=2000,n.cores=1)
+Beta <- t(posterior$beta)
+result <- Sequential2MeansBeta(Beta,lower=.1,upper=.5,l=5)
+```
+
+# Native Gaussian fitting and prediction
+
+The native samplers return coefficient draws, intercept draws and residual
+variances with separate iteration and chain axes. `FitRidge()` draws independent
+posterior samples. `FitHorseshoe()` and `FitSpikeSlab()` use iterative sampling.
+They center $X$ and $Y$ without standardizing predictor columns. Their priors
+are specified in `?FitGaussian` and differ from the `bayesreg` defaults.
+
+```{r native-fit}
+X.native <- cbind(x1=c(-2,-1,0,1,2,0), x2=c(0,1,-1,0,1,-1))
+y.native <- c(-3,-1,0,1,3,.5)
+native <- FitRidge(X.native,y.native,draws=1000,chains=2,seed=8)
+summary(native)
+dim(native$beta)
+Beta.native <- PosteriorDraws(native)
+dim(Beta.native)
+```
+
+`summary()` reports posterior means, standard deviations and equal-tail
+intervals for coefficients. The fitted array has iteration, chain and predictor
+axes. `PosteriorDraws()` pools its first two axes only in the returned matrix.
+
+```{r coefficient-plot, fig.width=5, fig.height=3, fig.pos="H", fig.align="center", fig.cap="Posterior coefficient means and 95 percent equal-tail intervals for the six-observation ridge example. The dashed line marks zero."}
+PlotCoefficients(native)
+```
+
+Predictors for new observations must have the same column definitions and
+order. Prediction reuses posterior draws; it does not fit another model.
+
+```{r native-prediction}
+predict(native,X.native[1:2,,drop=FALSE])
+predict(native,X.native[1:2,,drop=FALSE],include.noise=TRUE,seed=9)
+```
+
+The first call gives pointwise posterior intervals for the conditional mean.
+The second includes independent Gaussian observation noise in the interval
+draws. Both report the same posterior conditional mean.
+
+```{r native-diagnostics}
+if (requireNamespace("posterior",quietly=TRUE)) ChainDiagnostics(native)
+```
+
+`ChainDiagnostics()` uses the `posterior` package for rank R-hat, bulk and tail
+effective sample sizes, and the Monte Carlo standard error of the mean. It
+requires explicit chain identities and does not reconstruct chains from pooled
+draws. A single chain has no R-hat; constant variables have unavailable
+diagnostics. `PlotTrace()` and `PlotAutocorrelation()` display chains separately.
+Finite diagnostics alone do not establish convergence.
+
+The trace and autocorrelation plots below use the saved horseshoe example with
+five observations and four chains. Each chain retains 3000 draws after 1000
+burn-in iterations. The trace shows the first 300 retained draws; the
+within-chain autocorrelations use all 3000.
+
+```{r trace-figure, echo=FALSE, out.width="\\linewidth", fig.align="center", fig.pos="H", fig.cap="First 300 retained coefficient draws in four horseshoe chains. The short excerpt illustrates the display; it does not establish convergence."}
+knitr::include_graphics(file.path(system.file("help","figures",package="VsusP"),"trace.pdf"))
+```
+
+```{r acf-figure, echo=FALSE, out.width="\\linewidth", fig.align="center", fig.pos="H", fig.cap="Within-chain sample autocorrelations for the same coefficient, using 3000 retained draws per chain."}
+knitr::include_graphics(file.path(system.file("help","figures",package="VsusP"),"autocorrelation.pdf"))
+```
+
+For an exact-zero prior, use `FitSpikeSlab()` and inspect inclusion frequencies:
+
+```{r native-spike}
+native.ss <- FitSpikeSlab(X.native,y.native,draws=200,burnin=100,chains=2,seed=4)
+summary(SpikeSlabSelection(PosteriorDraws(native.ss)))
+```
+
+```{r inclusion-plot, fig.width=5, fig.height=3, fig.pos="H", fig.align="center", fig.cap="Inclusion frequencies from the short spike-and-slab example. The dashed line marks the median-probability-model cutoff of 0.5. This example illustrates the plotting call; it is not a convergence assessment."}
+PlotInclusion(native.ss)
+```
+
+# SAVS and empty selections
+
+With default handling, S2M leaves at least one signal. For a separate rule that can return no
+variables, VsusP provides the signal adaptive variable selector (SAVS) of Ray
+and Bhattacharya (2018). Let $\widehat\beta_j$ be a supplied coefficient estimate
+and $X_j$ its predictor column. With $a_+=\max(a,0)$, their closed form is
+\[
+\widehat\beta_j^*=\operatorname{sign}(\widehat\beta_j)\|X_j\|^{-2}
+\left(|\widehat\beta_j|\|X_j\|^2-|\widehat\beta_j|^{-2}\right)_+.
+\]
+An exactly zero estimate gives zero by continuity. A coefficient survives only
+when $|\widehat\beta_j|^3\|X_j\|^2>1$; equality gives zero. Every coefficient
+can therefore be removed. The implementation protects against overflow and uses
+an explicit roundoff convention for numerically ambiguous extreme-scale scores.
+
+```{r savs}
+SAVS(diag(2),c(.1,-.1))$selected
+SAVS(diag(2),c(2,0))$coefficients
+SAVS(X.native,coef(native))$selected
+```
+
+Use the same predictor matrix and units that define the estimates, and exclude
+the intercept. No scaling occurs inside `SAVS()`. Multiplying a predictor by a
+factor and dividing its coefficient by that factor preserves the linear
+predictor but changes the SAVS decision score. Standardize predictors before
+fitting if selection on a common predictor scale is wanted. The closed form is
+not the full penalized optimizer for correlated predictors and does not provide
+an automatic false-discovery guarantee.
+
+# DSS sparse prediction
+
+To retain a short predictor list while approximating a fitted linear predictor,
+`DSS()` uses the adaptive-L1 criterion of Hahn and Carvalho (2015,
+equation 21). Let $\bar\beta$ be the posterior mean and let $X$ contain the
+prediction points. We minimize over the sparse vector $\gamma$:
+\[
+\frac{1}{n}\|X\bar\beta-X\gamma\|_2^2
++\lambda\sum_{j:\bar\beta_j\ne0}\frac{|\gamma_j|}{|\bar\beta_j|},
+\qquad \lambda\ge0.
+\]
+For $\lambda>0$, entries with $\bar\beta_j=0$ are constrained to zero.
+For $\lambda=0$, the function returns $\bar\beta$.
+This is the paper's convex approximation to its variable-count penalty.
+The supplied $X$ may differ from the original fitting design, but its columns
+must retain the same definitions and order. Keep the intercept separately.
+
+```{r dss}
+beta.mean <- coef(native)
+dss <- DSS(X.native,beta.mean,lambda=.1)
+dss$selected
+dss$converged
+penalties <- c(0,.01,.1,1,10)
+dss.path <- lapply(penalties,function(lambda)DSS(X.native,beta.mean,lambda))
+stopifnot(all(vapply(dss.path,function(x)x$converged,logical(1))))
+data.frame(lambda=penalties,
+           selected=vapply(dss.path,function(x)length(x$selected),integer(1)),
+           mse=vapply(dss.path,function(x)x$mse,numeric(1)))
+```
+
+The penalty $\lambda$ controls the trade-off between sparsity and approximation
+error; the function does not choose it automatically. The reported `mse`
+compares $X\bar\beta$ with $X\gamma$ at the supplied points. It is not an
+estimate of error on new outcomes. Coordinate descent reports its relative
+optimality error as `kkt.error`; a warning and `converged=FALSE` identify an
+unmet tolerance. Dependent columns can give different selected sets with the
+same optimal fitted values. No inclusion probabilities or false-discovery
+control are claimed.
+
+# Clustering and tuning sensitivity
+
+The default S2M path retains `kmeans` and the legacy small-set convention.
+Two optional choices make computational decisions explicit:
+
+* `clustering="exact"` minimizes the two-cluster within-group sum of squares
+  over distinct adjacent cuts in sorted coefficient magnitudes. It uses no
+  random initialization. Extreme numerical ranges that erase distinctions
+  between inputs are rejected.
+* `small.set="refine"` splits a distinct recursive pair and applies the same
+  strict gap comparison. The default `"legacy"` retains that pair. This choice
+  can change the final signal count.
+
+```{r pair-refinement}
+pair <- matrix(c(0,.125,10),nrow=1)
+Sequential2MeansBeta(pair,.1,.1,1,"exact","legacy")$H.b.i
+Sequential2MeansBeta(pair,.1,.1,1,"exact","refine")$H.b.i
+```
+
+For a threshold grid, `S2MSensitivity()` reports modal counts, their frequencies
+and selected-set overlap. Jaccard similarity is the size of the intersection
+of adjacent selected sets divided by the size of their union.
+
+```{r sensitivity}
+path <- S2MSensitivity(Beta,c(.1,.5),clustering="exact",small.set="refine")
+data.frame(b=path$b.i,H=path$H.b.i,mode=path$mode.proportion,
+           overlap=path$jaccard.previous)
+```
+
+Count frequencies are not inclusion probabilities. An exact clustering optimum
+or stable selected set does not establish that the selected variables are correct.
+Neither option chooses an optimal threshold.
+
+# Spike-and-slab posterior draws
+
+A spike-and-slab fit gives an exact zero for each excluded coefficient.
+`SpikeSlabSelection()` uses these zeros to estimate inclusion probabilities:
+
+```{r spike-slab}
+Beta.ss <- rbind(c(1,0,0), c(2,0,0), c(0,-1,0), c(0,0,0))
+colnames(Beta.ss) <- c("x1","x2","x3")
+ss <- SpikeSlabSelection(Beta.ss)
+ss$inclusion.probability
+ss$MPM
+ss$HPPM
+```
+
+These fixed draws illustrate the input. Replace them with posterior draws from
+a spike-and-slab fit, excluding the intercept. The median probability model
+(MPM) includes coefficients with inclusion frequency at least 0.5. The empirical
+highest posterior probability model (HPPM) is the most frequent complete model
+visited by the supplied draws. It need not be the most probable model over all
+possible models. Tied model frequencies favor the first visited model; all tied
+model indices are returned. Small continuous-prior coefficients are not spikes.
+
+`TwoMeansBeta()` implements the basic 2-M rule: for each draw, take the smaller
+of the two cluster sizes, then use the modal count and median absolute
+coefficients to select variables. This differs from S2M's lower-mean noise set.
+
+```{r spike-clustering}
+TwoMeansBeta(Beta.ss)$selected
+Sequential2MeansBeta(Beta.ss,.1,.5,2,clustering="exact",zero.draws="empty")
+```
+
+An entirely zero draw has no two-means split. `TwoMeansBeta()` assigns it zero
+signals. S2M does so only with `zero.draws="empty"`; its default still rejects
+such draws. These are explicit boundary extensions. Nonzero constant-magnitude
+draws remain invalid. Median-ranking ties can select a coefficient never
+included in any draw when all posterior medians are zero. Use the inclusion
+summaries when inclusion probability is the quantity of interest.
+
+# Targeted selection pilot
+
+A reproducible pilot used 60 Gaussian datasets, with 10 datasets in each of six
+conditions. Each had $n=80$, $p=10$ and residual standard deviation one.
+The first two coefficients were $(0,0)$, $(0.25,-0.25)$ or $(1,-1)$; the others
+were zero. Predictors had AR(1) correlation $\rho=0$ or $0.8$ and were centered
+and standardized by their sample standard deviations before generating responses.
+Horseshoe fits used one worker, 1,000 retained draws, burn-in 500 and thinning 5.
+
+```{r pilot-table, echo=FALSE}
+pilot <- read.csv(system.file("validation","summary.csv",package="VsusP"),check.names=FALSE)
+pilot <- pilot[pilot$method=="SAVS",]
+knitr::kable(pilot[,c("effect","rho","n_success","empty.mean","fp.mean","fn.mean","exact.mean")],
+             col.names=c("Effect","Correlation","Datasets","Empty","FP","FN","Exact"),digits=2,row.names=FALSE)
+```
+
+Here Empty and Exact are proportions of datasets with an empty selection or
+exactly the true variable set. FP and FN are mean counts of false positives and
+false negatives. There were no failed fits or recorded warnings. SAVS returned
+an empty set in all 20 null datasets, but it missed weak signals, especially
+in the correlated opposite-sign case. The pilot is small: a proportion of
+10/10 has a 95% Wilson interval of about 0.72 to 1.00.
+
+```{r pilot-figure, echo=FALSE, out.width="\\linewidth", fig.cap="Empty selections and exact-support recovery in the exploratory pilot. Points summarize 10 independent datasets per condition; intervals are 95 percent Wilson intervals. The upper label gives the first coefficient, with the second its negative; the lower label gives predictor correlation. S2M thresholds shown here are fixed illustrations, not optimized choices."}
+source(system.file("validation","plot-selection-pilot.R",package="VsusP"))
+pilot.figure <- tempfile(fileext=".pdf")
+plot_selection_pilot(system.file("validation","summary.csv",package="VsusP"),pilot.figure)
+knitr::include_graphics(pilot.figure)
+```
+
+Paired predictor-unit changes altered some SAVS selections while preserving the
+fitted linear predictor. Undoing those changes restored the original selections
+in every case. Selection based on the first and second posterior halves differed
+in 2 of 60 cases. This comparison is an instability screen, not a convergence
+check. The pilot does not establish false-discovery control or general accuracy.
+The complete outcomes and runner are installed under `validation/`.
+
+# Fixed-posterior checks
+
+To check the native horseshoe and spike-and-slab fits, we compare their sampled
+posterior summaries with independent numerical integration for the same
+five-observation, one-predictor input. Each fit uses four chains, 1000 burn-in
+iterations and 3000 retained draws per chain. We compare coefficient means and
+mean residual variance; the spike-and-slab check also compares inclusion
+probability. These fixed inputs test the fitted posterior calculations rather
+than selection accuracy across repeated datasets.
+
+```{r target-figure, echo=FALSE, out.width="\\linewidth", fig.align="center", fig.pos="H", fig.cap="Sampled-minus-integrated posterior summaries divided by the audit tolerance. HS denotes horseshoe and SS denotes spike-and-slab. The tolerance is the larger of 0.01 and six Monte Carlo standard errors from 100-draw batches. The shaded range is an audit criterion, not a confidence interval."}
+knitr::include_graphics(file.path(system.file("help","figures",package="VsusP"),"posterior-agreement.pdf"))
+```
+
+```{r model-figure, echo=FALSE, out.width="\\linewidth", fig.align="center", fig.pos="H", fig.cap="Spike-and-slab inclusion-state probabilities from numerical integration and sampling, with plus or minus 1.96 Monte Carlo standard errors. The trace excerpt shows the first 300 retained draws per chain; all 3000 enter the summaries."}
+knitr::include_graphics(file.path(system.file("help","figures",package="VsusP"),"joint-models.pdf"))
+```
+
+The displayed differences meet the stated audit tolerances. Agreement in this
+small example does not establish reliable mixing in high-dimensional models or
+interval coverage across repeated datasets. The numerical inputs and figure
+source are supplied in `doc-data/`.
+
+# Interpretation and limits
+
+The threshold $b$ is on the coefficient scale. Scaling predictors changes its
+meaning, so inspect the tuning path and sensitivity to scaling and $b$.
+`kmeans` initialization can affect results; set a random seed for reproducibility.
+
+S2M requires at least two coefficients and at least two distinct absolute values
+in each initial draw. An initial pair of distinct values gives one noise
+coefficient and one signal. Constant-magnitude draws are rejected because they
+have no lower-mean cluster. After an initial split, an indivisible lower-mean
+candidate is retained without another split.
+
+By default, every accepted draw leaves at least one signal, so S2M cannot automatically
+select an empty model. Its modal counts and selected variables are clustering
+summaries. They are not posterior inclusion probabilities, significance tests or
+a guarantee of false-positive control.
 
 # References
 
-- **Li, H., & Pati, D. (2020) **  "Variable Selection Using Shrinkage Priors." Computational Statistics & Data Analysis, 107, pp.107-119. <doi:10.1016/j.csda.2020.106839>.
+Hahn, P. R. and Carvalho, C. M. (2015). Decoupling Shrinkage and Selection in
+Bayesian Linear Models: A Posterior Summary Perspective. *Journal of the American
+Statistical Association*, **110**(509), 435–448.
+https://doi.org/10.1080/01621459.2014.993077.
 
-- **Makalic, E. & Schmidt, D. F. (2016)** "High-Dimensional Bayesian Regularised Regression with the BayesReg Package." arXiv:1611.06649 <doi:10.48550/arXiv.1611.06649>.
+Li, H. and Pati, D. (2017). Variable selection using shrinkage priors.
+*Computational Statistics & Data Analysis*, **107**, 107–119.
+<https://doi.org/10.1016/j.csda.2016.10.008>.
 
-- **Bhattacharya, A., Pati, D., Pillai, N.S., & Dunson, D.B. (2015)** “Dirichlet-Laplace Priors for Optimal Shrinkage.” Journal of the American Statistical Association, 110 (512), 1479–1490. <doi:10.1080/01621459.2015.1044091>.
+Makalic, E. and Schmidt, D. F. (2016). High-dimensional Bayesian regularised
+regression with the BayesReg package. arXiv:1611.06649.
+<https://doi.org/10.48550/arXiv.1611.06649>.
 
-- **Rosenwald, A., et al. (2002)** “The Use of Molecular Profiling to Predict Survival After Chemotherapy for Diffuse Large-B-Cell Lymphoma.” New England Journal of Medicine, 346 (25), 1937–1947. <doi:10.1056/NEJMoa012914>.
+Ray, P. and Bhattacharya, A. (2018). Signal Adaptive Variable Selector for the
+Horseshoe Prior. arXiv:1810.09004. <https://arxiv.org/abs/1810.09004>.
 
-- **Bhattacharya, A., & Dunson, D. (2011)** “Sparse Bayesian Infinite Factor Models.” Biometrika, 98 (2), 291–306. <doi:10.1093/biomet/asq076>.
-
-For further information and updates, visit the VsusP package repository at <https://github.com/nilson01/VsusP>.
-
-
-
+Wang, H. and Song, M. (2011). Ckmeans.1d.dp: Optimal k-means clustering in one
+dimension by dynamic programming. The R Journal, 3(2), 29--33.
+<https://doi.org/10.32614/RJ-2011-015>.

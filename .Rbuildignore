@@ -9,3 +9,8 @@
 ^VsusP\.pdf$
 ^doc$
 ^Meta$
+^VsusP\.Rcheck$
+^VsusP_[0-9].*\.tar\.gz$
+^vignettes/.*\.(log|pdf)$
+^tools$
+^\.Rd2pdf[0-9]+$

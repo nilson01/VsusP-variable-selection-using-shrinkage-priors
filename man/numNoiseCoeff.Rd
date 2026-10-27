@@ -2,18 +2,26 @@
 % Please edit documentation in R/Sequential2Means.R
 \name{numNoiseCoeff}
 \alias{numNoiseCoeff}
-\title{Variable selection using shrinkage priors :: numNoiseCoeff}
+\title{Count coefficients in the saved S2M noise set}
 \usage{
-numNoiseCoeff(Beta.i, b.i_r)
+numNoiseCoeff(Beta.i, b.i_r, clustering = "kmeans", small.set = "legacy")
 }
 \arguments{
-\item{Beta.i}{N by p matrix consisting of N posterior samples of p variables}
+\item{Beta.i}{Numeric coefficient vector for one posterior draw.}
 
-\item{b.i_r}{tuning parameter value from Sequential 2-means (S2M) variable selection algorithm.}
+\item{b.i_r}{Nonnegative center-gap threshold.}
+
+\item{clustering}{Two-means backend. "kmeans" retains the existing randomized
+implementation; "exact" scans all distinct adjacent cuts in one dimension.}
+
+\item{small.set}{Recursive stopping convention. "legacy" retains a candidate
+with at most two elements. "refine" splits a distinct pair and reapplies
+the center-gap rule, stopping at a singleton or constant candidate.}
 }
 \value{
-number of noise coefficients of numeric data type
+Size of the saved lower-mean candidate set.
 }
 \description{
-Variable selection using shrinkage priors :: numNoiseCoeff
+Count coefficients in the saved S2M noise set
 }
+\keyword{internal}
