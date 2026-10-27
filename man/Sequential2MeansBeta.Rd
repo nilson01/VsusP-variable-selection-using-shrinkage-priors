@@ -2,76 +2,93 @@
 % Please edit documentation in R/Sequential2Means.R
 \name{Sequential2MeansBeta}
 \alias{Sequential2MeansBeta}
-\title{Variable selection using shrinkage prior :: Sequential2MeansBeta}
+\title{Apply sequential two-means to posterior coefficient draws}
 \usage{
-Sequential2MeansBeta(Beta, lower, upper, l)
+Sequential2MeansBeta(
+  Beta,
+  lower,
+  upper,
+  l,
+  clustering = c("kmeans", "exact"),
+  small.set = c("legacy", "refine"),
+  zero.draws = c("error", "empty")
+)
 }
 \arguments{
-\item{Beta}{N by p matrix consisting of N posterior samples of p variables}
+\item{Beta}{Finite numeric matrix with posterior draws in rows and
+at least two coefficients in columns. Exclude any intercept column.
+Each draw must have at least two distinct absolute coefficients.}
 
-\item{lower}{the lower bound of the chosen values of the tuning parameter of numeric data type.}
+\item{lower, upper}{Finite, nonnegative threshold bounds, with lower <= upper.}
 
-\item{upper}{the upper bound of the chosen values of the tuning parameter of numeric data type.}
+\item{l}{Positive integer number of equally spaced thresholds.}
 
-\item{l}{the number of chosen values of the tuning parameter of numeric data type.}
+\item{clustering}{Two-means backend. "kmeans" retains the existing randomized
+implementation; "exact" scans all distinct adjacent cuts in one dimension.}
+
+\item{small.set}{Recursive stopping convention. "legacy" retains a candidate
+with at most two elements. "refine" splits a distinct pair and reapplies
+the center-gap rule, stopping at a singleton or constant candidate.}
+
+\item{zero.draws}{Handling of entirely zero draws: \code{"error"} (default)
+rejects an undefined split; \code{"empty"} assigns zero signals. The latter
+is an explicit boundary extension for exact spike-and-slab draws.}
 }
 \value{
-A list S2M which will hold p, b.i, and H.b.i:
-
-\item{p}{total number of variables in the model}
-\item{b.i}{the vector values of the tuning parameter specified by the user}
-\item{H.b.i}{the estimated number of signals corresponding to each b.i of numeric data type}
+A list with p (number of coefficients), b.i (thresholds),
+H.b.i (modal signal counts), and abs.post.median (column medians of
+absolute coefficient draws).
 }
 \description{
-Sequential2MeansBeta function will take as input Beta : N by p matrix consisting of N posterior samples of p variables, lower : the lower bound of the chosen values of the tuning parameter, upper : the upper bound of the chosen values of the tuning parameter, and l :the number of chosen values of the tuning parameter. The function will return a list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
+Estimate a signal count at each threshold from supplied coefficient draws,
+following section 2.2.1 of Li and Pati (2017).
+}
+\details{
+For each draw, S2M first splits absolute coefficients into two
+clusters. It saves the lower-mean cluster as the noise candidate set.
+While the center gap exceeds the threshold, it saves the current
+lower-mean cluster and splits that set again. At stopping it uses the
+saved set, rather than the lower cluster from the stopping split.
+
+By default, the implementation retains a candidate set of at most two elements, or
+a candidate with identical magnitudes, without another split. For an
+initial pair of distinct magnitudes, the lower singleton is the noise
+set. An initial draw with identical magnitudes has no lower-mean cluster
+and is rejected. These are computational boundary conventions. The refine
+option can change counts when a retained pair has gap greater than b.
+
+H.b.i is the mode of the per-draw signal counts; a frequency tie selects
+the smaller count. Accepted draws always leave at least one signal, so
+S2M cannot automatically select an empty model. This clustering summary
+is not a posterior inclusion probability or an error-control guarantee.
+Results can depend on kmeans initialization; use set.seed() for
+reproducibility. The exact backend consumes no random draws. It finds the
+minimum within-cluster sum of squares in floating-point arithmetic; equal
+losses choose the earliest sorted cut. Numeric rescaling that collapses
+distinct values is rejected. An exact clustering optimum does not establish
+optimal variable selection. Scaling coefficients changes threshold meaning.
+With \code{zero.draws = "empty"}, all-zero draws contribute zero to the
+count frequencies and their row indices are returned as \code{zero.draws}.
+Other constant-magnitude draws remain invalid. This convention does not
+make S2M an empty-model selector for continuous-prior draws.
 }
 \examples{
-
-# -----------------------------------------------------------------
-# Example 1: Gaussian Model and Horseshoe prior
-
-n <- 10
-p <- 5
-X <- matrix(rnorm(n * p), n, p)
-beta <- exp(rnorm(p))
-Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
-df <- data.frame(X, Y)
-
-# beta samples for gaussian model using horseshow prior and gibbs sampling
-rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 110, 100)
-
-Beta <- t(rv.hs$beta)
-lower <- 0
-upper <- 1
-l <- 20
-S2Mbeta <- Sequential2MeansBeta(Beta, lower, upper, l)
-H.b.i <- S2Mbeta$H.b.i
-
-# -----------------------------------------------------------------
-# Example 2: normal model and lasso prior
-
-#' n <- 10
-p <- 5
-X <- matrix(rnorm(n * p), n, p)
-beta <- exp(rnorm(p))
-Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
-df <- data.frame(X, Y)
-rv.hs <- bayesreg::bayesreg(Y ~ ., df, "normal", "lasso", 150, 100)
-
-Beta <- t(rv.hs$beta)
-lower <- 0
-upper <- 1
-l <- 15
-S2Mbeta <- Sequential2MeansBeta(Beta, lower, upper, l)
-H.b.i <- S2Mbeta$H.b.i
-
+Beta <- rbind(c(.01, .02, .03, .3, .31, 10, 11),
+              c(-.01, -.02, -.03, -.3, -.31, -10, -11))
+set.seed(1)
+result <- Sequential2MeansBeta(Beta, .1, .5, 2)
+result$H.b.i
+S2MVarSelectionV1(result, result$H.b.i[2])
 }
 \references{
-Makalic, E. & Schmidt, D. F.
-High-Dimensional Bayesian Regularised Regression with the BayesReg Package
-arXiv:1611.06649, 2016
+Li, H. and Pati, D. (2017). Variable selection using shrinkage
+priors. Computational Statistics & Data Analysis, 107, 107--119.
+\doi{10.1016/j.csda.2016.10.008}.
 
-Li, H., & Pati, D.
-Variable selection using shrinkage priors
-Computational Statistics & Data Analysis, 107, 107-119.
+Wang, H. and Song, M. (2011). Ckmeans.1d.dp: Optimal k-means clustering
+in one dimension by dynamic programming. The R Journal, 3(2), 29--33.
+\doi{10.32614/RJ-2011-015}.
+}
+\seealso{
+\code{\link[=Sequential2Means]{Sequential2Means()}}, \code{\link[=OptimalHbi]{OptimalHbi()}}, \code{\link[=S2MVarSelection]{S2MVarSelection()}}
 }

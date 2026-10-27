@@ -2,48 +2,34 @@
 % Please edit documentation in R/S2MVarSelection.R
 \name{OptimalHbi}
 \alias{OptimalHbi}
-\title{Variable selection using shrinkage priors :: OptimalHbi}
+\title{Plot the sequential two-means tuning path}
 \usage{
 OptimalHbi(bi, Hbi)
 }
 \arguments{
-\item{bi}{a vector holding the values of the tuning parameter specified by the user}
+\item{bi}{Nonempty vector of finite, nonnegative thresholds.}
 
-\item{Hbi}{The estimated number of signals corresponding to each b.i of numeric data type}
+\item{Hbi}{Nonnegative integer counts, with the same length as bi.}
 }
 \value{
-the optimal value (numeric) of tuning parameter and the associated H value
+Invisible NULL. A plot is drawn on the current graphics device.
 }
 \description{
-OptimalHbi function will take b.i and H.b.i as input which comes from the result of TwoMeans function. It will return plot from which you can infer about H: the optimal value of the tuning parameter.
+Display the estimated signal count at each threshold to support a choice
+of tuning parameter. The function does not choose a threshold or H.
 }
 \examples{
-
-n <- 10
-p <- 5
-X <- matrix(rnorm(n * p), n, p)
-beta <- exp(rnorm(p))
-Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
-df <- data.frame(X, Y)
-rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 110, 100)
-
-Beta <- t(rv.hs$beta)
-lower <- 0
-upper <- 1
-l <- 5
-S2Mbeta <- Sequential2MeansBeta(Beta, lower, upper, l)
-
-bi <- S2Mbeta$b.i
-Hbi <- S2Mbeta$H.b.i
-OptimalHbi(bi, Hbi)
-
+Beta <- rbind(c(.01, .02, .03, .3, .31, 10, 11),
+              c(-.01, -.02, -.03, -.3, -.31, -10, -11))
+set.seed(1)
+result <- Sequential2MeansBeta(Beta, .1, .5, 2)
+OptimalHbi(result$b.i, result$H.b.i)
 }
 \references{
-Makalic, E. & Schmidt, D. F.
-High-Dimensional Bayesian Regularised Regression with the BayesReg Package
-arXiv:1611.06649, 2016
-
-Li, H., & Pati, D.
-Variable selection using shrinkage priors
-Computational Statistics & Data Analysis, 107, 107-119.
+Li, H. and Pati, D. (2017). Variable selection using shrinkage
+priors. Computational Statistics & Data Analysis, 107, 107--119.
+\doi{10.1016/j.csda.2016.10.008}.
+}
+\seealso{
+\code{\link[=Sequential2MeansBeta]{Sequential2MeansBeta()}}
 }

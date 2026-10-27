@@ -7,7 +7,7 @@ test_that("S2MVarSelection works", {
   beta <- exp(rnorm(p))
   Y <- X %*% beta + rnorm(n, 0, 1)
   df <- data.frame(X, Y)
-  rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 150, 100)
+  rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 150, 100, n.cores=1)
   Beta <- t(rv.hs$beta)
   H <- 12
 

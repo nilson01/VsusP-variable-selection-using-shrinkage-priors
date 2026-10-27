@@ -1,5 +1,8 @@
 
 test_that("Sequential2Means works", {
+  sampler <- bayesreg::bayesreg
+  local_mocked_bindings(fitShrinkageGaussian=function(...) sampler(..., n.cores=1),
+                        .package="VsusP")
   # Generating data
   n <- 100
   p <- 20
@@ -86,7 +89,7 @@ test_that("Sequential2Means works", {
   df <- data.frame(X, Y)
 
   # sampling beta from shrinkage prior using gibbs sampling
-  rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 2000, 700)
+  rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 2000, 700, n.cores=1)
   Beta <- t(rv.hs$beta)
 
   lower <- 0

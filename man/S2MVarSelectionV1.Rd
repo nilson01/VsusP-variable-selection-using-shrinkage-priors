@@ -2,18 +2,38 @@
 % Please edit documentation in R/S2MVarSelection.R
 \name{S2MVarSelectionV1}
 \alias{S2MVarSelectionV1}
-\title{Variable selection using shrinkage priors :: S2MVarSelectionV1}
+\title{Select coefficients from an S2M summary}
 \usage{
 S2MVarSelectionV1(S2M, H = 5)
 }
 \arguments{
-\item{S2M}{List obtained from the 2Means.variables function}
+\item{S2M}{List containing p (a positive integer) and abs.post.median
+(a finite, nonnegative numeric vector of length p). Legacy lists with
+these two fields are also accepted.}
 
-\item{H}{Estimated number (numeric) of signals, obtained from the optimal.b.i function (default = newValue)}
+\item{H}{Integer number of variables to select, from zero to S2M$p.}
 }
 \value{
-a vector of indices of important subset of variables for the Gaussian Linear modelof shape H X 1
+Integer vector of selected column indices, ordered by decreasing
+median absolute magnitude. Equal medians favor larger column indices.
+H = 0 returns integer(0).
 }
 \description{
-S2MVarSelectionV1 function will take S2M: a list obtained from the 2Means.variables function and H: the estimated number of signals obtained from the optimal.b.i function. This will give out the important subset of variables for the Gaussian Linear model.
+Select the H largest posterior median absolute coefficients from a
+summary returned by either S2M fitting function.
+}
+\examples{
+Beta <- rbind(c(.01, .02, .03, .3, .31, 10, 11),
+              c(-.01, -.02, -.03, -.3, -.31, -10, -11))
+set.seed(1)
+result <- Sequential2MeansBeta(Beta, .1, .5, 2)
+S2MVarSelectionV1(result, result$H.b.i[2])
+}
+\references{
+Li, H. and Pati, D. (2017). Variable selection using shrinkage
+priors. Computational Statistics & Data Analysis, 107, 107--119.
+\doi{10.1016/j.csda.2016.10.008}.
+}
+\seealso{
+\code{\link[=S2MVarSelection]{S2MVarSelection()}}, \code{\link[=Sequential2MeansBeta]{Sequential2MeansBeta()}}
 }

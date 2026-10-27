@@ -1,188 +1,107 @@
-#' Variable selection using shrinkage priors :: numNoiseCoeff
-#'
-#' @param Beta.i N by p matrix consisting of N posterior samples of p variables
-#' @param b.i_r tuning parameter value from Sequential 2-means (S2M) variable selection algorithm.
-#'
-#' @return number of noise coefficients of numeric data type
-#'
-numNoiseCoeff <- function(Beta.i, b.i_r) {
-  # perform k means for sequential 2 means to prune the noise coefficients
-  fit <- stats::kmeans(abs(Beta.i), 2)
+#' Count coefficients in the saved S2M noise set
+#' @param Beta.i Numeric coefficient vector for one posterior draw.
+#' @param b.i_r Nonnegative center-gap threshold.
+#' @return Size of the saved lower-mean candidate set.
+#' @inheritParams Sequential2MeansBeta
+#' @keywords internal
+numNoiseCoeff <- function(Beta.i, b.i_r, clustering = "kmeans", small.set = "legacy") {
+  # A lower-mean cluster requires at least two distinct magnitudes.
+  if (length(unique(abs(Beta.i))) < 2L) {
+    stop("Each Beta draw must contain at least two distinct absolute coefficients.")
+  }
+  # With two distinct observations the two singleton clusters are determined.
+  if (length(Beta.i) == 2L) return(1L)
+  fit <- splitS2M(Beta.i, clustering)
+  # Initialize |D| to the lower-mean cluster (Li and Pati, 2017, section 2.2.1).
+  numNoise <- sum(fit$cluster == which.min(fit$centers))
 
   # perform sequential 2 means on subsequent clusters until threshold is reached
   # between two centers
   while (max(fit$centers) - min(fit$centers) > b.i_r) {
     # finding the noise coefficients from smaller cluster derived from kmeans fit
     Beta.i <- Beta.i[which(fit$cluster == which.min(fit$centers))]
+    numNoise <- length(Beta.i)
     # breaking loop for minimum size of beta vector
-    if (length(Beta.i) <= 2) {
+    if (length(Beta.i) <= 1L ||
+        (small.set == "legacy" && length(Beta.i) <= 2L) ||
+        length(unique(abs(Beta.i))) < 2L) {
       break
     }
     # clustering the noise coefficients and signals
-    fit <- stats::kmeans(abs(Beta.i), 2)
+    fit <- splitS2M(Beta.i, clustering)
   }
-  # index of smaller cluster's center
-  argminCenter <- which.min(fit$centers)
-  # size of noise coefficients that is in the argminCenter's cluster
-  return(length(which(fit$cluster == argminCenter)))
+  # Return the saved |D|, not the smaller cluster from the stopping split.
+  return(numNoise)
 }
 #--------------------  Sequential2Means  --------------------#
-#' Variable selection using shrinkage priors :: Sequential2Means
+#' Fit Gaussian shrinkage regression and apply sequential two-means
 #'
-#' Sequential2Means function will take as input X: design matrix, Y : response vector, t: vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm. The function will return a list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
-#'
+#' Fit a Gaussian linear model with bayesreg, then apply sequential two-means
+#' (S2M) to its coefficient draws. The intercept is excluded from selection.
+#' @param X Finite numeric design matrix with observations in rows and at
+#'   least two predictors in columns.
+#' @param Y Finite numeric response vector of length nrow(X).
+#' @param b.i Nonempty vector of finite, nonnegative center-gap thresholds.
+#' @param prior Shrinkage prior: "ridge" ("rr"), "lasso", "horseshoe"
+#'   ("hs"), or "horseshoe+" ("hs+").
+#' @param n.samples Integer number of requested posterior draws, at least 100.
+#'   bayesreg may round this count up when using parallel workers.
+#' @param burnin Integer number of burn-in iterations, at least 100.
+#' @param clustering Two-means backend. "kmeans" retains the existing randomized
+#'   implementation; "exact" scans all distinct adjacent cuts in one dimension.
+#' @param small.set Recursive stopping convention. "legacy" retains a candidate
+#'   with at most two elements. "refine" splits a distinct pair and reapplies
+#'   the center-gap rule, stopping at a singleton or constant candidate.
+#' @return A list with Beta (returned draws in rows, predictors in columns),
+#'   p (number of predictors), b.i (thresholds), H.b.i (modal signal counts),
+#'   and abs.post.median (column medians of absolute coefficient draws).
+#' @details All returned draws are used. Thresholds are on the coefficient
+#'   scale, so predictor scaling affects their interpretation. See
+#'   [Sequential2MeansBeta()] for stopping conventions and limitations.
+#'   A short chain demonstrates the call; assess convergence and effective
+#'   sample size before using posterior summaries for inference.
+#' @seealso [Sequential2MeansBeta()], [S2MVarSelectionV1()]
 #' @export
-#' @param X Design matrix of dimension n X p, where n = total data points and p = total number of features
-#' @param Y Response vector of dimension n X 1
-#' @param b.i Vector of tuning parameter values from Sequential 2-means (S2M) variable selection algorithm of dimension specified by user.
-#' @param prior Shrinkage prior distribution over the Beta. Available options are ridge regression: prior="rr" or prior="ridge", lasso regression: prior="lasso", horseshoe regression: prior="hs" or prior="horseshoe", and horseshoe+ regression : prior="hs+" or prior="horseshoe+" ( String data type)
-#' @param n.samples Number of posterior samples to generate of numeric data type
-#' @param burnin Number of burn-in samples of numeric data type
+#' @references Li, H. and Pati, D. (2017). Variable selection using shrinkage
+#'   priors. Computational Statistics & Data Analysis, 107, 107--119.
+#'   \doi{10.1016/j.csda.2016.10.008}.
 #'
-#' @return A list S2M which will hold Beta, b.i, and H.b.i.
-#'
-#' \item{Beta}{N by p matrix consisting of N posterior samples of p variables}
-#' \item{b.i}{the user specified vector holding the tuning parameter values}
-#' \item{H.b.i}{the estimated number of signals of numeric data type corresponding to each b.i}
-#'
-#' @references
-#'
-#' Makalic, E. & Schmidt, D. F.
-#' High-Dimensional Bayesian Regularised Regression with the BayesReg Package
-#' arXiv:1611.06649, 2016
-#'
-#' Li, H., & Pati, D.
-#' Variable selection using shrinkage priors
-#' Computational Statistics & Data Analysis, 107, 107-119.
-#'
+#'   Wang, H. and Song, M. (2011). Ckmeans.1d.dp: Optimal k-means clustering
+#'   in one dimension by dynamic programming. The R Journal, 3(2), 29--33.
+#'   \doi{10.32614/RJ-2011-015}.
 #' @examples
-#' # -----------------------------------------------------------------
-#' # Example 1: Gaussian Model and Horseshoe prior
-#' n <- 10
-#' p <- 5
-#' X <- matrix(rnorm(n * p), n, p)
-#' beta <- exp(rnorm(p))
-#' Y <- as.vector(X %*% beta + rnorm(n, 0, 1))
-#' b.i <- seq(0, 1, 0.05)
-#'
-#' # Sequential2Means with horseshoe+ using gibbs sampling
-#' # recommended n.samples is 5000 and burning is 2000
-#' S2M <- Sequential2Means(X, Y, b.i, "horseshoe+", 110, 100)
-#' Beta <- S2M$Beta
-#' H.b.i <- S2M$H.b.i
-#'
-#' # -----------------------------------------------------------------
-#' # Example 2: Gaussian Model and ridge prior
-#'
-#' n <- 10
-#' p <- 5
-#' X <- matrix(rnorm(n * p), n, p)
-#' beta <- exp(rnorm(p))
-#' Y <- as.vector(X %*% beta + rnorm(n, 0, 1))
-#' b.i <- seq(0, 1, 0.05)
-#' # Sequential2Means with ridge regression using gibbs sampling
-#' # recommended n.samples is 5000 and burning is 2000
-#' S2M <- Sequential2Means(X, Y, b.i, "ridge", 110, 100)
-#' Beta <- S2M$Beta
-#' H.b.i <- S2M$H.b.i
-#'
-Sequential2Means <- function(X, Y, b.i, prior = "horseshoe+", n.samples = 5000, burnin = 2000) {
-  # Check for NULL or NaN values in X
-  if (is.null(X) || any(is.na(X))) {
-    stop(paste("X must not be NULL or have NaN values."))
-  }
+#' set.seed(12)
+#' X <- matrix(rnorm(120), 40, 3)
+#' Y <- 3 * X[, 1] + rnorm(40)
+#' result <- Sequential2Means(X, Y, c(.1, .5), prior = "ridge",
+#'                            n.samples = 100, burnin = 100)
+#' dim(result$Beta)
+#' S2MVarSelectionV1(result, result$H.b.i[1])
+Sequential2Means <- function(X, Y, b.i, prior = "horseshoe+", n.samples = 5000, burnin = 2000,
+                             clustering = c("kmeans", "exact"),
+                             small.set = c("legacy", "refine")) {
+  clustering <- matchChoice(clustering, c("kmeans", "exact"), "clustering")
+  small.set <- matchChoice(small.set, c("legacy", "refine"), "small.set")
+  checkNumericMatrix(X, "X", min.cols = 2L)
+  checkNumericVector(Y, "Y")
+  if (length(Y) != nrow(X)) stop("X and Y must have the same number of observations.")
+  checkNumericVector(b.i, "b.i", nonnegative = TRUE)
+  prior <- normalizePrior(prior)
+  checkIntegerScalar(n.samples, "n.samples", lower = 100)
+  checkIntegerScalar(burnin, "burnin", lower = 100)
 
-  # Check for matrix data type of X
-  if (!is.matrix(X)) {
-    stop(paste("X must be passed as matrix data type."))
-  }
-
-  # Check for NULL or NaN values in Y
-  if (is.null(Y) || any(is.na(Y))) {
-    stop(paste("Y must not be NULL or have NaN values."))
-  }
-
-  # Check for vector data type of Y
-  if (!is.vector(Y)) {
-    stop(paste("Y must be passed as vector data type."))
-  }
-  # Check for compatibility of dimensions between X and Y
-  if (nrow(X) != length(Y)) {
-    stop(paste("Dimensions between X and Y are not compatible. "))
-  }
-
-  # Check for NULL or NaN values in b.i
-  if (is.null(b.i) || any(is.na(b.i))) {
-    stop(paste("b.i must not be NULL or have NaN values."))
-  }
-
-  # Check for data type of b.i
-  if (!is.vector(b.i)) {
-    stop(paste("b.i must be passed as vector data type."))
-  }
-
-  # Check for prior from available options
-  if (!prior %in% c("ridge", "lasso", "horseshoe", "horseshoe+")) {
-    stop(paste("Available prior options: ridge regression('ridge'), lasso regression('lasso'), horseshoe regression ('horseshoe') and horseshoe+ regression ('horseshoe+')"))
-  }
-
-  # Check for the lower bound of n.samples
-  if (n.samples < 100) {
-    stop(paste("n.samples is recommended to be at least 100"))
-  }
-
-  # Check if n.samples is a natural number
-  if (n.samples %% 1 != 0) {
-    stop(paste("n.samples must be a natural number greater than or equal to 100"))
-  }
-
-  # Check for the lower bound of burnin
-  if (burnin < 100) {
-    stop(paste("burnin is recommended to be at least 100"))
-  }
-
-  # Check if the number of burnin is a natural number
-  if (burnin %% 1 != 0) {
-    stop(paste("burnin must be a natural number greater than or equal to 100"))
-  }
-
-  # the posterior sample size
-  N <- n.samples
-
-  # number of covariates
-  p <- ncol(X)
-
-  # number of tuning parameters
-  l <- length(b.i)
-
-  # initializing the number of signals corresponding to each b.i
-  H.b.i <- rep(0, length = length(b.i))
-
-  # N by p matrix consisting of N posterior samples of p variables
-
-  # Using MCMC for beta sampling
-  fit <- bayesreg::bayesreg(Y ~ ., data.frame(X, Y), model = "gaussian", prior, n.samples, burnin)
+  # Internal names prevent a predictor named Y from becoming the response.
+  data <- as.data.frame(X)
+  names(data) <- paste0("X", seq_len(ncol(X)))
+  data[[".VsusP.response"]] <- Y
+  fit <- fitShrinkageGaussian(.VsusP.response ~ ., data, model = "gaussian",
+                           prior = prior, n.samples = n.samples, burnin = burnin)
   Beta <- t(fit$beta)
-
-  #---------------- Sequential 2 means algorithm ----------------#
-  for (r in 1:l) {
-    # initializing vector to store important variables for each beta sample
-    impVars.count <- seq(0, length = N)
-
-    # loop for each MCMC beta samples
-    for (i in 1:N) {
-      # total coefficients subtracted with the size of noise coefficients
-      impVars.count[i] <- p - numNoiseCoeff(Beta[i, ], b.i[r])
-    }
-
-    # sorting the variables based on the impVars.count
-    H.b.i[r] <- as.numeric(names(sort(-table(impVars.count)))[1])
-  }
-
-  # list to hold desired output
-  S2M <- list(Beta = Beta, H.b.i = H.b.i)
-
-  return(S2M)
+  if (!is.null(colnames(X))) colnames(Beta) <- colnames(X)
+  checkNumericMatrix(Beta, "Beta", min.cols = 2L)
+  result <- summarizeS2M(Beta, b.i, clustering, small.set)
+  # Use every returned draw: parallel samplers may round the requested count up.
+  c(list(Beta = Beta), result)
 }
 
 
@@ -191,126 +110,81 @@ Sequential2Means <- function(X, Y, b.i, prior = "horseshoe+", n.samples = 5000, 
 #--------------- Sequential2MeansBeta algorithm ---------------#
 ################################################################
 
-#' Variable selection using shrinkage prior :: Sequential2MeansBeta
+#' Apply sequential two-means to posterior coefficient draws
 #'
-#' Sequential2MeansBeta function will take as input Beta : N by p matrix consisting of N posterior samples of p variables, lower : the lower bound of the chosen values of the tuning parameter, upper : the upper bound of the chosen values of the tuning parameter, and l :the number of chosen values of the tuning parameter. The function will return a list S2M which will hold p: the total number of variables, b.i: the values of the tuning parameter, H.b.i : the estimated number of signals corresponding to each b.i, abs.post.median: medians of the absolute values of the posterior samples.
+#' Estimate a signal count at each threshold from supplied coefficient draws,
+#' following section 2.2.1 of Li and Pati (2017).
+#' @param Beta Finite numeric matrix with posterior draws in rows and
+#'   at least two coefficients in columns. Exclude any intercept column.
+#'   Each draw must have at least two distinct absolute coefficients.
+#' @param lower,upper Finite, nonnegative threshold bounds, with lower <= upper.
+#' @param zero.draws Handling of entirely zero draws: `"error"` (default)
+#'   rejects an undefined split; `"empty"` assigns zero signals. The latter
+#'   is an explicit boundary extension for exact spike-and-slab draws.
+#' @param l Positive integer number of equally spaced thresholds.
+#' @param clustering Two-means backend. "kmeans" retains the existing randomized
+#'   implementation; "exact" scans all distinct adjacent cuts in one dimension.
+#' @param small.set Recursive stopping convention. "legacy" retains a candidate
+#'   with at most two elements. "refine" splits a distinct pair and reapplies
+#'   the center-gap rule, stopping at a singleton or constant candidate.
+#' @return A list with p (number of coefficients), b.i (thresholds),
+#'   H.b.i (modal signal counts), and abs.post.median (column medians of
+#'   absolute coefficient draws).
+#' @details For each draw, S2M first splits absolute coefficients into two
+#'   clusters. It saves the lower-mean cluster as the noise candidate set.
+#'   While the center gap exceeds the threshold, it saves the current
+#'   lower-mean cluster and splits that set again. At stopping it uses the
+#'   saved set, rather than the lower cluster from the stopping split.
 #'
+#'   By default, the implementation retains a candidate set of at most two elements, or
+#'   a candidate with identical magnitudes, without another split. For an
+#'   initial pair of distinct magnitudes, the lower singleton is the noise
+#'   set. An initial draw with identical magnitudes has no lower-mean cluster
+#'   and is rejected. These are computational boundary conventions. The refine
+#'   option can change counts when a retained pair has gap greater than b.
+#'
+#'   H.b.i is the mode of the per-draw signal counts; a frequency tie selects
+#'   the smaller count. Accepted draws always leave at least one signal, so
+#'   S2M cannot automatically select an empty model. This clustering summary
+#'   is not a posterior inclusion probability or an error-control guarantee.
+#'   Results can depend on kmeans initialization; use set.seed() for
+#'   reproducibility. The exact backend consumes no random draws. It finds the
+#'   minimum within-cluster sum of squares in floating-point arithmetic; equal
+#'   losses choose the earliest sorted cut. Numeric rescaling that collapses
+#'   distinct values is rejected. An exact clustering optimum does not establish
+#'   optimal variable selection. Scaling coefficients changes threshold meaning.
+#'   With `zero.draws = "empty"`, all-zero draws contribute zero to the
+#'   count frequencies and their row indices are returned as `zero.draws`.
+#'   Other constant-magnitude draws remain invalid. This convention does not
+#'   make S2M an empty-model selector for continuous-prior draws.
+#' @seealso [Sequential2Means()], [OptimalHbi()], [S2MVarSelection()]
 #' @export
-#' @param Beta N by p matrix consisting of N posterior samples of p variables
-#' @param lower the lower bound of the chosen values of the tuning parameter of numeric data type.
-#' @param upper the upper bound of the chosen values of the tuning parameter of numeric data type.
-#' @param l the number of chosen values of the tuning parameter of numeric data type.
+#' @references Li, H. and Pati, D. (2017). Variable selection using shrinkage
+#'   priors. Computational Statistics & Data Analysis, 107, 107--119.
+#'   \doi{10.1016/j.csda.2016.10.008}.
 #'
-#' @return A list S2M which will hold p, b.i, and H.b.i:
-#'
-#' \item{p}{total number of variables in the model}
-#' \item{b.i}{the vector values of the tuning parameter specified by the user}
-#' \item{H.b.i}{the estimated number of signals corresponding to each b.i of numeric data type}
-#'
-#' @references
-#'
-#' Makalic, E. & Schmidt, D. F.
-#' High-Dimensional Bayesian Regularised Regression with the BayesReg Package
-#' arXiv:1611.06649, 2016
-#'
-#' Li, H., & Pati, D.
-#' Variable selection using shrinkage priors
-#' Computational Statistics & Data Analysis, 107, 107-119.
-#'
+#'   Wang, H. and Song, M. (2011). Ckmeans.1d.dp: Optimal k-means clustering
+#'   in one dimension by dynamic programming. The R Journal, 3(2), 29--33.
+#'   \doi{10.32614/RJ-2011-015}.
 #' @examples
-#'
-#' # -----------------------------------------------------------------
-#' # Example 1: Gaussian Model and Horseshoe prior
-#'
-#' n <- 10
-#' p <- 5
-#' X <- matrix(rnorm(n * p), n, p)
-#' beta <- exp(rnorm(p))
-#' Y <- as.vector(X %*% beta + rnorm(n, 0, 1))
-#' df <- data.frame(X, Y)
-#'
-#' # beta samples for gaussian model using horseshow prior and gibbs sampling
-#' rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 110, 100)
-#'
-#' Beta <- t(rv.hs$beta)
-#' lower <- 0
-#' upper <- 1
-#' l <- 20
-#' S2Mbeta <- Sequential2MeansBeta(Beta, lower, upper, l)
-#' H.b.i <- S2Mbeta$H.b.i
-#'
-#' # -----------------------------------------------------------------
-#' # Example 2: normal model and lasso prior
-#'
-#' #' n <- 10
-#' p <- 5
-#' X <- matrix(rnorm(n * p), n, p)
-#' beta <- exp(rnorm(p))
-#' Y <- as.vector(X %*% beta + rnorm(n, 0, 1))
-#' df <- data.frame(X, Y)
-#' rv.hs <- bayesreg::bayesreg(Y ~ ., df, "normal", "lasso", 150, 100)
-#'
-#' Beta <- t(rv.hs$beta)
-#' lower <- 0
-#' upper <- 1
-#' l <- 15
-#' S2Mbeta <- Sequential2MeansBeta(Beta, lower, upper, l)
-#' H.b.i <- S2Mbeta$H.b.i
-#'
-Sequential2MeansBeta <- function(Beta, lower, upper, l) {
-  # Check for NULL or NaN values in Beta
-  if (is.null(Beta) || any(is.na(Beta))) {
-    stop(paste("Beta must not be NULL or have NaN values. \n Please check Sequential2Means funnction if Beta is not available."))
-  }
-
-  # Check for matrix data type of Beta
-  if (!is.matrix(Beta)) {
-    stop(paste("Beta must be passed as matrix data type. "))
-  }
-
-  # Lower bound and Upper bound magnitude comparison check
-  if (lower > upper) {
-    stop(paste("Lower bound is greater than Upper bound. "))
-  }
-
-  # Check if l is NULL
-  if (is.null(l)) {
-    stop(paste("l must not be NULL. "))
-  }
-
-  # Check if l is natural number greater than zero
-  if (l <= 0 | l %% 1 != 0) {
-    stop(paste("l must be an integer greater than or equal to zero. "))
-  }
-
-
-  # number data points
-  N <- nrow(Beta)
-
-  # number of covariates
-  p <- ncol(Beta)
-
-  # tuning parameters
-  b.i <- seq(from = lower, to = upper, length.out = l)
-
-  # initializing the number of signals as zero for corresponding b.i
-  H.b.i <- rep(0, length = length(b.i))
-
-  # ...... Sequential 2 means algorithm ......#
-
-  for (r in 1:l) {
-    # initializing vector to store important variables for each beta sample
-    impVars.count <- seq(0, length = N)
-    # loop for each MCMC beta samples
-    for (i in 1:N) {
-      # total coefficients subtracted with the size of noise coefficients
-      impVars.count[i] <- p - numNoiseCoeff(Beta[i, ], b.i[r])
-    }
-    # sorting the variables based on the impVars.count
-    H.b.i[r] <- as.numeric(names(sort(-table(impVars.count)))[1])
-  }
-
-  # list to hold desired output
-  S2Mbeta <- list(p = p, b.i = b.i, H.b.i = H.b.i)
-  return(S2Mbeta)
+#' Beta <- rbind(c(.01, .02, .03, .3, .31, 10, 11),
+#'               c(-.01, -.02, -.03, -.3, -.31, -10, -11))
+#' set.seed(1)
+#' result <- Sequential2MeansBeta(Beta, .1, .5, 2)
+#' result$H.b.i
+#' S2MVarSelectionV1(result, result$H.b.i[2])
+Sequential2MeansBeta <- function(Beta, lower, upper, l,
+                                 clustering = c("kmeans", "exact"),
+                                 small.set = c("legacy", "refine"),
+                                 zero.draws = c("error", "empty")) {
+  clustering <- matchChoice(clustering, c("kmeans", "exact"), "clustering")
+  small.set <- matchChoice(small.set, c("legacy", "refine"), "small.set")
+  zero.draws <- matchChoice(zero.draws, c("error", "empty"), "zero.draws")
+  checkNumericMatrix(Beta, "Beta", min.cols = 2L)
+  checkNumericScalar(lower, "lower", nonnegative = TRUE)
+  checkNumericScalar(upper, "upper", nonnegative = TRUE)
+  if (lower > upper) stop("lower must not exceed upper.")
+  checkIntegerScalar(l, "l", lower = 1)
+  summarizeS2M(Beta, seq(from = lower, to = upper, length.out = l),
+               clustering, small.set, zero.draws = zero.draws)
 }

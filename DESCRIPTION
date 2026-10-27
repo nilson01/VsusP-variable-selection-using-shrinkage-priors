@@ -1,25 +1,40 @@
 Package: VsusP
 Title: Variable Selection using Shrinkage Priors
-Version: 1.0.0
+Version: 1.0.0.9000
 Authors@R: c(
             person("Nilson", "Chapagain", email = "nilson.chapagain@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-2962-2949")),
             person("Debdeep", "Pati", email = "debdeep@tamu.edu", role = c("aut"))
             )
-Description: Bayesian variable selection using shrinkage priors to identify significant variables in high-dimensional datasets. The package includes methods for determining the number of significant variables through innovative clustering techniques of posterior distributions, specifically utilizing the 2-Means and Sequential 2-Means (S2M) approaches. The package aims to simplify the variable selection process with minimal tuning required in statistical analysis.
+Description: Select variables from shrinkage-prior posterior coefficient draws
+    using sequential two-means clustering from Li and Pati (2017)
+    <doi:10.1016/j.csda.2016.10.008>. Estimate a signal count at each tuning
+    threshold and rank coefficients by posterior median absolute magnitude.
+    Accept supplied coefficient draws or fit Gaussian shrinkage regression
+    through 'bayesreg' or native ridge, horseshoe and spike-and-slab samplers.
+    Retain chain identities for diagnostics, prediction and posterior plots.
+    Also provide the signal adaptive variable selector
+    of Ray and Bhattacharya (2018) <doi:10.48550/arXiv.1810.09004>,
+    decoupled shrinkage and selection with the adaptive-L1 approximation of
+    Hahn and Carvalho (2015) <doi:10.1080/01621459.2014.993077>, optional
+    exact two-cluster fitting, basic two-means selection, exact-zero
+    spike-and-slab inclusion summaries and tuning sensitivity summaries.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 Imports: 
     bayesreg,
-    stats
+    graphics,
+    stats,
+    utils
 Suggests: 
+    posterior (>= 1.6.0),
     covr,
     MASS,
     knitr,
     rmarkdown,
     tinytex,
-    testthat (>= 3.0.0)
+    testthat (>= 3.2.0)
 Config/testthat/edition: 3
 Maintainer: Nilson Chapagain <nilson.chapagain@gmail.com>
 URL: https://github.com/nilson01/VsusP-variable-selection-using-shrinkage-priors

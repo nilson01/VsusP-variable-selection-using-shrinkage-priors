@@ -2,45 +2,41 @@
 % Please edit documentation in R/S2MVarSelection.R
 \name{S2MVarSelection}
 \alias{S2MVarSelection}
-\title{Variable selection using shrinkage priors :: S2MVarSelection}
+\title{Select coefficients by posterior median absolute magnitude}
 \usage{
 S2MVarSelection(Beta, H = 5)
 }
 \arguments{
-\item{Beta}{matrix consisting of N posterior samples of p variables that is known either to user or from Sequential2Means function}
+\item{Beta}{Finite numeric matrix with posterior draws in rows and
+coefficients in columns. Exclude any intercept column.}
 
-\item{H}{Estimated number of signals obtained from the optimal.b.i function of numeric data type}
+\item{H}{Integer number of variables to select, from zero to ncol(Beta).}
 }
 \value{
-a vector containing indices of important subset of variables of dimension H X 1.
+Integer vector of selected column indices in decreasing order
+of median absolute magnitude. Equal medians favor larger column indices.
+H = 0 returns integer(0).
 }
 \description{
-S2MVarSelection function will take S2M: a list obtained from the 2Means.variables function and H: the estimated number of signals obtained from the optimal.H.b.i function. This will give out the important subset of variables for the Gaussian Linear model.
+Return the indices of the H largest column medians of absolute draws.
+}
+\details{
+H is supplied by the caller. This function does not estimate H
+or test statistical significance.
 }
 \examples{
-
-n <- 10
-p <- 5
-X <- matrix(rnorm(n * p), n, p)
-beta <- exp(rnorm(p))
-Y <- as.vector(X \%*\% beta + rnorm(n, 0, 1))
-df <- data.frame(X, Y)
-# Fit a model using gaussian horseshoe+ for 200 samples
-# # recommended n.samples is 5000 and burning is 2000
-rv.hs <- bayesreg::bayesreg(Y ~ ., df, "gaussian", "horseshoe+", 110, 100)
-
-Beta <- rv.hs$beta
-H <- 3
-impVariablesGLM <- S2MVarSelection(Beta, H)
-impVariablesGLM
-
+Beta <- rbind(c(.01, .02, .03, .3, .31, 10, 11),
+              c(-.01, -.02, -.03, -.3, -.31, -10, -11))
+set.seed(1)
+result <- Sequential2MeansBeta(Beta, .1, .5, 2)
+S2MVarSelection(Beta, result$H.b.i[2])
+S2MVarSelection(Beta, 0)
 }
 \references{
-Makalic, E. & Schmidt, D. F.
-High-Dimensional Bayesian Regularised Regression with the BayesReg Package
-arXiv:1611.06649, 2016
-
-Li, H., & Pati, D.
-Variable selection using shrinkage priors
-Computational Statistics & Data Analysis, 107, 107-119.
+Li, H. and Pati, D. (2017). Variable selection using shrinkage
+priors. Computational Statistics & Data Analysis, 107, 107--119.
+\doi{10.1016/j.csda.2016.10.008}.
+}
+\seealso{
+\code{\link[=S2MVarSelectionV1]{S2MVarSelectionV1()}}, \code{\link[=Sequential2MeansBeta]{Sequential2MeansBeta()}}
 }
