@@ -54,7 +54,7 @@ For the development version:
 devtools::install_github("nilson01/VsusP-variable-selection-using-shrinkage-priors")
 ```
 
-# Work from posterior draws
+# Selection from posterior draws
 
 The rows of `Beta` are posterior draws; columns correspond to coefficients.
 Exclude any intercept column. These fixed draws show the selection steps
@@ -87,7 +87,7 @@ Both selection functions return column indices. `S2MVarSelectionV1()` uses the
 stored medians rather than recomputing them. `H=0` returns `integer(0)`; this is
 an explicit selection count, not an empty-model decision made by S2M.
 
-# Fit a Gaussian shrinkage model
+# Gaussian fitting with bayesreg
 
 `Sequential2Means()` fits a Gaussian regression through `bayesreg` and applies
 S2M to all returned coefficient draws. Its priors are `ridge` (`rr`), `lasso`,
@@ -104,9 +104,8 @@ dim(fit$Beta)
 S2MVarSelectionV1(fit,fit$H.b.i[1])
 ```
 
-This short chain demonstrates the call. Assess convergence and effective sample
-size and use adequate sampling before drawing scientific conclusions. For draws
-from a separate `bayesreg` fit, transpose its coefficient matrix:
+Use adequate sampling and check convergence before interpreting the results.
+For draws from a separate `bayesreg` fit, transpose its coefficient matrix:
 
 ```{r separate-fit, eval=FALSE}
 posterior <- bayesreg::bayesreg(y ~ .,data.frame(X,y),model="gaussian",
@@ -115,7 +114,7 @@ Beta <- t(posterior$beta)
 result <- Sequential2MeansBeta(Beta,lower=.1,upper=.5,l=5)
 ```
 
-# Native Gaussian fitting and prediction
+# Gaussian fitting and prediction
 
 The native samplers return coefficient draws, intercept draws and residual
 variances with separate iteration and chain axes. `FitRidge()` draws independent
@@ -133,11 +132,11 @@ Beta.native <- PosteriorDraws(native)
 dim(Beta.native)
 ```
 
-`summary()` reports posterior means, standard deviations and equal-tail
-intervals for coefficients. The fitted array has iteration, chain and predictor
-axes. `PosteriorDraws()` pools its first two axes only in the returned matrix.
+`summary()` reports coefficient means, standard deviations and equal-tail
+intervals. `PosteriorDraws()` pools the iteration and chain axes in its returned
+matrix; the fitted object retains separate chains.
 
-```{r coefficient-plot, fig.width=5, fig.height=3, fig.pos="H", fig.align="center", fig.cap="Posterior coefficient means and 95 percent equal-tail intervals for the six-observation ridge example. The dashed line marks zero."}
+```{r coefficient-plot, fig.width=5, fig.height=3, fig.pos="H", fig.align="center", fig.cap="Posterior coefficient means and 95 percent equal-tail intervals in the ridge example. The dashed line marks zero."}
 PlotCoefficients(native)
 ```
 
@@ -149,9 +148,9 @@ predict(native,X.native[1:2,,drop=FALSE])
 predict(native,X.native[1:2,,drop=FALSE],include.noise=TRUE,seed=9)
 ```
 
-The first call gives pointwise posterior intervals for the conditional mean.
-The second includes independent Gaussian observation noise in the interval
-draws. Both report the same posterior conditional mean.
+The first call gives pointwise intervals for the conditional mean. The second
+adds observation noise for posterior predictive intervals. Both report the same
+posterior conditional mean.
 
 ```{r native-diagnostics}
 if (requireNamespace("posterior",quietly=TRUE)) ChainDiagnostics(native)
@@ -177,14 +176,14 @@ knitr::include_graphics(file.path(system.file("help","figures",package="VsusP"),
 knitr::include_graphics(file.path(system.file("help","figures",package="VsusP"),"autocorrelation.pdf"))
 ```
 
-For an exact-zero prior, use `FitSpikeSlab()` and inspect inclusion frequencies:
+To summarize which coefficients are included, fit a spike-and-slab model:
 
 ```{r native-spike}
 native.ss <- FitSpikeSlab(X.native,y.native,draws=200,burnin=100,chains=2,seed=4)
 summary(SpikeSlabSelection(PosteriorDraws(native.ss)))
 ```
 
-```{r inclusion-plot, fig.width=5, fig.height=3, fig.pos="H", fig.align="center", fig.cap="Inclusion frequencies from the short spike-and-slab example. The dashed line marks the median-probability-model cutoff of 0.5. This example illustrates the plotting call; it is not a convergence assessment."}
+```{r inclusion-plot, fig.width=5, fig.height=3, fig.pos="H", fig.align="center", fig.cap="Inclusion frequencies from the short spike-and-slab example, with the median probability model cutoff at 0.5. The short run does not establish convergence."}
 PlotInclusion(native.ss)
 ```
 
@@ -327,7 +326,7 @@ draws remain invalid. Median-ranking ties can select a coefficient never
 included in any draw when all posterior medians are zero. Use the inclusion
 summaries when inclusion probability is the quantity of interest.
 
-# Targeted selection pilot
+# Selection performance in a small pilot
 
 A reproducible pilot used 60 Gaussian datasets, with 10 datasets in each of six
 conditions. Each had $n=80$, $p=10$ and residual standard deviation one.
@@ -350,7 +349,7 @@ an empty set in all 20 null datasets, but it missed weak signals, especially
 in the correlated opposite-sign case. The pilot is small: a proportion of
 10/10 has a 95% Wilson interval of about 0.72 to 1.00.
 
-```{r pilot-figure, echo=FALSE, out.width="\\linewidth", fig.cap="Empty selections and exact-support recovery in the exploratory pilot. Points summarize 10 independent datasets per condition; intervals are 95 percent Wilson intervals. The upper label gives the first coefficient, with the second its negative; the lower label gives predictor correlation. S2M thresholds shown here are fixed illustrations, not optimized choices."}
+```{r pilot-figure, echo=FALSE, out.width="\\linewidth", fig.cap="Empty selections and exact-support recovery across 10 datasets per condition, with 95 percent Wilson intervals. Labels give the first coefficient (the second is its negative) and predictor correlation. S2M thresholds are fixed, not optimized."}
 source(system.file("validation","plot-selection-pilot.R",package="VsusP"))
 pilot.figure <- tempfile(fileext=".pdf")
 plot_selection_pilot(system.file("validation","summary.csv",package="VsusP"),pilot.figure)
@@ -374,7 +373,7 @@ mean residual variance; the spike-and-slab check also compares inclusion
 probability. These fixed inputs test the fitted posterior calculations rather
 than selection accuracy across repeated datasets.
 
-```{r target-figure, echo=FALSE, out.width="\\linewidth", fig.align="center", fig.pos="H", fig.cap="Sampled-minus-integrated posterior summaries divided by the audit tolerance. HS denotes horseshoe and SS denotes spike-and-slab. The tolerance is the larger of 0.01 and six Monte Carlo standard errors from 100-draw batches. The shaded range is an audit criterion, not a confidence interval."}
+```{r target-figure, echo=FALSE, out.width="\\linewidth", fig.align="center", fig.pos="H", fig.cap="Sampled-minus-integrated summaries divided by the comparison tolerance: the larger of 0.01 and six Monte Carlo standard errors from 100-draw batches. HS denotes horseshoe and SS spike-and-slab. Shading marks the comparison criterion, not a confidence interval."}
 knitr::include_graphics(file.path(system.file("help","figures",package="VsusP"),"posterior-agreement.pdf"))
 ```
 
@@ -382,7 +381,7 @@ knitr::include_graphics(file.path(system.file("help","figures",package="VsusP"),
 knitr::include_graphics(file.path(system.file("help","figures",package="VsusP"),"joint-models.pdf"))
 ```
 
-The displayed differences meet the stated audit tolerances. Agreement in this
+The displayed differences meet the stated comparison tolerances. Agreement in this
 small example does not establish reliable mixing in high-dimensional models or
 interval coverage across repeated datasets. The numerical inputs and figure
 source are supplied in `doc-data/`.

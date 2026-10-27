@@ -4,7 +4,6 @@
 ^\.github$
 ^codecov\.yml$
 ^\.gitlab-ci\.yml$
-^README.Rmd
 ^\.\.pdf$
 ^VsusP\.pdf$
 ^doc$
@@ -14,3 +13,5 @@
 ^vignettes/.*\.(log|pdf)$
 ^tools$
 ^\.Rd2pdf[0-9]+$
+^cran-comments\.md$
+^\.DS_Store$

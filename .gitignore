@@ -8,3 +8,8 @@ inst/doc
 /Meta/
 
 .Rd2pdf*
+
+# Local package builds and checks
+*.Rcheck/
+/VsusP_*.tar.gz
+/..pdf
