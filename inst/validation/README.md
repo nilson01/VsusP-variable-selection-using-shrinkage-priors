@@ -27,10 +27,9 @@ From a source checkout with VsusP installed:
 Rscript inst/validation/run-selection-pilot.R /path/to/new-output
 ```
 
-The runner refuses to reuse an occupied directory. It saves data, posterior
-draws and every failed case. Summary generation stops if any case fails; no
-failed case is replaced or silently excluded. The recorded run used R 4.5.0
-on macOS arm64. Small numerical differences may arise on other platforms.
+The runner requires a new output directory and retains every attempted case.
+Aggregation stops on failures. The saved run used R 4.5.0 on macOS arm64;
+small numerical differences may arise on other platforms.
 
 ## Interpretation
 
@@ -45,8 +44,8 @@ proportions, empty selections and exact-support recovery. False discovery
 proportion is zero for an empty selection. Monte Carlo standard errors use
 independent datasets, not individual predictors. Posterior-mean selection
 from the first and second halves disagreed in 2 of 60 cases; agreement is not
-a convergence certificate. This short single-chain pilot does not establish
-false-discovery control, posterior convergence or general performance.
+a convergence certificate. This single-chain pilot does not establish
+false-discovery control, convergence or general performance.
 
 For the unit check, alternate predictor columns were multiplied by `0.1` and
 `10`, and their estimates divided by the same factors. The fitted linear
